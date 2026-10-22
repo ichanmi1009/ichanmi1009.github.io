@@ -7,21 +7,22 @@ window.PORTFOLIO = {
     {
       slug: 'can-adas', title: 'CAN 기반 ADAS 차량 제어 시스템',
       category: '차량 · CAN RTL', filter: 'vehicle', period: '2026.09 — 2026.10', featured: true,
-      summary: 'CAN RX RTL을 구현하고 Basys 3의 MicroBlaze VCU Firmware와 연동해 CAN 수신·이벤트 처리·STM32 Motor ECU 제어 흐름을 구성했습니다.',
+      summary: 'Vision ECU의 영상 인식 결과를 CAN으로 수신한 Basys 3 VCU가 주행 상태와 제어 명령을 결정하고 STM32 Motor ECU로 전달하는 ADAS 시스템입니다.',
       role: 'CAN RX RTL · 공통 Bit Timing · Basys 3 VCU Firmware',
       tags: ['Verilog', 'CAN 2.0A', 'Basys 3', 'MicroBlaze', 'Vitis C', 'STM32 Motor ECU'],
-      highlights: ['CAN RX RTL: 80 MHz · 500 kbps · 16 TQ · CRC-15', 'Basys 3 MicroBlaze VCU: HAL / Driver / Application', 'STM32 Motor1·2 ECU로 CAN 제어 명령 전달'],
+      highlights: ['Vision ECU → VCU → Motor ECU 주행 제어 데이터 경로', 'CAN RX RTL: 80 MHz · 500 kbps · 16 TQ · CRC-15', 'Basys 3 VCU에서 중앙 제어 판단 및 Motor1·2 명령 생성'],
       award: '온디바이스 AI 과정 최종 프로젝트 경진대회 대상',
-      context: 'Zynq Z7-20의 ADAS 인식 결과를 CAN으로 전달하고 Basys 3(MicroBlaze 기반 VCU)가 수신 Frame을 차량 제어 Event와 좌·우 Motor 명령으로 변환하는 팀 프로젝트입니다. Motor1·2 ECU는 STM32 기반입니다. 주요 구현 내용은 CAN RX RTL의 Timing·Frame·CRC 처리 및 Basys 3 VCU의 CAN HAL·Driver·Application입니다. 실제 VCU–Motor 검증에서는 ADAS 결과를 Simulation Frame으로 주입했습니다.',
+      context: '전체 ADAS 차량 제어 시스템은 Zynq Z7-20 Vision ECU → CAN Bus → Basys 3 VCU(MicroBlaze) → STM32 Motor1·2 ECU로 구성됩니다. Vision ECU가 영상에서 차선·신호등·표지판·방지턱을 인식해 결과 데이터를 CAN Frame으로 보내면, VCU가 중앙에서 주행 상태·이벤트 우선순위·속도·정지·회전 명령을 결정하고 Motor ECU로 전달합니다. 본인 구현 범위는 CAN RX RTL과 Basys 3 VCU의 CAN HAL·Driver·Application이며, 검증 단계에서 Vision ECU의 결과 데이터는 Simulation Frame으로 대체해 주입한 범위를 구분합니다.',
       problems: [
-        {label: '비트 타이밍 불일치', text: 'Hard Sync와 Resync가 서로 다른 Timing 기준을 참조하면서 Sample Point가 흔들릴 수 있는 구조를 확인했습니다.'},
+        {label: '공통 Timing 기준 불일치', text: 'CAN RX/TX가 개별 Tick을 사용하면 Hard Sync와 Resync의 Bit Boundary·Sample Point 기준이 달라질 수 있어 공통 TQ Tick을 제안했습니다.'},
+        {label: '자기 송신 Edge의 불필요한 Resync', text: '자신이 송신한 Dominant Edge를 수신 측이 외부 Falling Edge로 판단해 Positive Resync가 발생하는 조건을 별도로 분석했습니다.'},
         {label: '제어 흐름 복잡도', text: '수신 데이터 처리, 이벤트 판단, 모터 명령 송신이 연속되는 경로에서 계층별 책임과 처리 순서의 구분이 필요했습니다.'}
       ],
       steps: [
         {heading: 'CAN 수신 경로 모듈화', text: 'rx_sync → tq_gen → bit_timing → destuffer → frame FSM → CRC-15 → rx_buffer 순서로 수신 동작을 분리했습니다.'},
         {heading: '공통 Timing 기준 정리', text: '80 MHz Clock에서 500 kbps / 16 TQ 조건을 계산하고 Hard Sync·Resync가 같은 TQ Tick을 기준으로 동작하도록 정리했습니다.'},
-        {heading: 'Basys 3 VCU Firmware 연동', text: 'Basys 3 FPGA의 MicroBlaze에서 Vitis Bare-metal C로 CAN HAL(Register 접근)·Driver(RX/TX Queue)·Application(ADAS Event·Motor Command)을 분리했습니다.'},
-        {heading: 'VCU–Motor ECU 검증', text: 'ADAS 인식값을 Simulation Frame으로 주입한 뒤 Basys 3 VCU의 Event/PD 처리 결과를 STM32 Motor1·2 ECU로 전달하는 CAN 제어 경로를 검증했습니다.'}
+        {heading: 'Vision ECU 결과 수신 → Basys 3 VCU 중앙 제어', text: 'Vision ECU의 차선·신호·표지판·방지턱 인식 결과를 CAN으로 받아 VCU의 MicroBlaze/Vitis C HAL·Driver·Application에서 이벤트 판단, 주행 상태 관리와 Motor 명령 생성을 수행합니다.'},
+        {heading: 'STM32 Motor ECU에 제어 명령 전달', text: 'Vision ECU 인식 결과를 모사한 CAN Simulation Frame을 Basys 3 VCU에 주입하고 중앙 제어 결과가 STM32 Motor1·2 ECU에 속도·정지·회전 명령으로 전달되는 경로를 검증했습니다.'}
       ],
       deepLeftTitle: 'Bit Timing 기준을 하나로',
       deepLeftIntro: '한 비트는 2.000 μs, 16 TQ 조건입니다. Hard Sync와 Resync의 기준 Tick이 다르면 수신 Sampling 시점이 어긋날 수 있습니다.',
@@ -33,7 +34,7 @@ window.PORTFOLIO = {
       ],
       deepRightTitle: 'Basys 3 MicroBlaze VCU Firmware',
       layers: [
-        ['L3', 'Application', 'MicroBlaze C · ADAS Event · Lane PD · Safe Stop'],
+        ['L3', 'Application', 'Vision ECU 인식 결과 · 중앙 상태/우선순위 판단 · Lane PD · Safe Stop'],
         ['L2', 'Driver', 'CAN RX Interrupt · RX/TX Queue · Parser'],
         ['L1', 'HAL', 'AXI4-Lite CAN_BTR / CAN_CR / CAN_SR · RX/TX Mailbox']
       ],
@@ -42,9 +43,9 @@ window.PORTFOLIO = {
         {value: '16 TQ', label: 'Bit Timing', detail: 'Hard Sync·Resync 공통 기준'},
         {value: '대상', label: '최종 프로젝트', detail: '온디바이스 AI 과정 경진대회'}
       ],
-      takeaway: '통신 프로토콜을 구현할 때는 개별 블록의 기능뿐 아니라 공통 Timing 기준과 모듈 간 경계를 먼저 정의하는 것이 중요하다는 것을 확인했습니다. 이후에는 데이터가 전달되는 전체 경로를 먼저 정리하고, RTL과 Firmware 각각에서 검증 가능한 단위로 설계하는 방식을 적용하고 있습니다.',
-      verification: ['CAN RX Hard Sync·Resync와 Stuff/Form/CRC Error 처리 검토', 'Basys 3 MicroBlaze VCU의 RX ISR → Queue → 10 ms Task 처리 흐름 확인', 'ADAS Simulation Frame → Basys 3 VCU → 실제 STM32 Motor1·2 ECU로 CAN Command 전달 확인'],
-      architecture: ['Zynq Z7-20 · ADAS', 'CAN Bus', 'Basys 3 · CAN RX RTL', 'Basys 3 · MicroBlaze VCU', 'STM32 · Motor1/2 ECU']
+      takeaway: 'Vision ECU가 제공한 인식 결과를 VCU가 중앙에서 판단해 Motor ECU 제어 명령으로 변환하는 전체 경로를 구현하며, CAN 수신 비트의 Timing 기준과 실제 Frame·Firmware 처리 순서가 시스템 제어의 안정성을 좌우함을 확인했습니다. 공통 TQ Tick과 자기 송신 Edge Resync는 서로 다른 원인으로 분리해 해결했습니다.',
+      verification: ['CAN RX 공통 TQ Tick과 자기 송신 Edge Resync를 별개 항목으로 검토', 'Basys 3 VCU: Vision ECU 인식 결과 Format의 CAN RX ISR → Queue → 10 ms 중앙 제어 Task', 'Vision ECU 결과 모의 CAN Frame → Basys 3 VCU → 실제 STM32 Motor1·2 ECU 제어 명령 전달 확인'],
+      architecture: ['Vision ECU · Zynq Z7-20', 'CAN · 인식 결과', 'Basys 3 · VCU 중앙 제어', 'CAN · Motor Command', 'STM32 · Motor1/2 ECU']
     },
     {
       slug: 'fpga-adas-isp', title: 'FPGA 기반 ADAS ISP SoC', category: 'FPGA · ISP SoC', filter: 'vehicle',
@@ -170,12 +171,12 @@ window.PORTFOLIO = {
 // 기술 상세: 원본 노션 설계 기록과 실보드/검증 근거를 기반으로 작성
 window.PORTFOLIO.technicalDetails = {
   "can-adas": {
-    "focus": "시스템 보드 역할: Zynq Z7-20(ADAS ECU) → CAN Bus → Basys 3 FPGA(CAN RX RTL + MicroBlaze VCU / Vitis C) → STM32(Motor1·2 ECU). CAN 비트 수신부터 VCU Event 판단, Motor Command 전달까지 각 책임을 분리했습니다.",
+    "focus": "ADAS 시스템 데이터 경로: Vision ECU(Zynq Z7-20)는 영상을 인식해 차선·신호등·표지판·방지턱의 인식 결과를 CAN으로 보냅니다. VCU(Basys 3, MicroBlaze)는 이를 수신해 주행 상태·속도·정지·회전을 중앙 판단하고 Motor1·2 ECU(STM32)에 CAN 제어 명령을 전송합니다.",
     "spec": [
       [
         "ECU / 보드 구성",
-        "Zynq Z7-20: ADAS · Basys 3: VCU · STM32: Motor1/2 ECU",
-        "VCU는 STM32가 아닌 Basys 3"
+        "Vision ECU: Zynq Z7-20 · VCU: Basys 3 · Motor1/2 ECU: STM32",
+        "영상 인식 → 중앙 제어 → 모터 구동"
       ],
       [
         "VCU 실행 환경",
@@ -204,8 +205,8 @@ window.PORTFOLIO.technicalDetails = {
       ],
       [
         "주요 CAN ID",
-        "0x100 VCU HB · 0x110/0x111 Motor CMD · 0x301 ADAS1 Result",
-        "제어/진단 메시지 분리"
+        "0x100 VCU HB · 0x110/0x111 Motor CMD · 0x301 Vision 인식 Result",
+        "CAN ID 기능별 구분"
       ]
     ],
     "implementation": [
@@ -228,63 +229,63 @@ window.PORTFOLIO.technicalDetails = {
       {
         "title": "03 | Basys 3 VCU · MicroBlaze Firmware",
         "items": [
-          "VCU는 STM32가 아니라 Basys 3 FPGA의 MicroBlaze에서 구동합니다. Vitis Bare-metal C로 HAL → Driver → Application 계층을 구성했습니다.",
-          "HAL은 CAN Controller Register 접근, Driver는 CAN RX Interrupt·RX/TX Queue, Application은 ADAS Event 처리·차선 PD 제어·Motor Command 생성·차량 상태 관리를 담당합니다.",
-          "CAN 수신 ISR에서는 RX Queue 등록까지만 수행하고, Superloop의 10 ms Task에서 CAN_ProcessRx → Parser → APP Event → Motor Command Queue → CAN_ProcessTx 흐름을 처리했습니다."
+          "Vision ECU가 전송하는 차선·신호등·표지판·방지턱의 영상 인식 결과를 CAN Frame으로 수신하고, Basys 3의 MicroBlaze/Vitis Bare-metal C 기반 VCU에서 중앙 제어합니다.",
+          "HAL은 CAN Controller Register 접근, Driver는 RX ISR·RX/TX Queue·Frame Parser, Application은 인식 Event 우선순위·주행 상태·차선 PD·좌우 Motor Command를 담당합니다.",
+          "수신 ISR은 RX Queue 적재까지 처리하고, Superloop의 10 ms Task에서 CAN_ProcessRx → Parser → Vision Event 판단 → Motor Command Queue → CAN_ProcessTx를 수행합니다."
         ]
       },
       {
         "title": "04 | STM32 Motor ECU 연동과 Safe Stop",
         "items": [
-          "Motor1·Motor2 ECU는 STM32를 사용합니다. Basys 3 VCU가 0x110/0x111 Command를 보내고 각 Motor ECU가 이를 수신해 좌·우 모터 제어에 사용하도록 연계했습니다.",
-          "ADAS Result는 Green/Red/Sign 30/70/Speed Bump/Lane Event로 해석하고, 차선 중심 X좌표를 이용해 좌·우 Target RPM을 계산하도록 구성했습니다.",
-          "Fault/Heartbeat Timeout 조건에서는 Safe Stop을 Latch하고 일반 제어보다 E-STOP·Motor STOP을 우선하도록 구성했습니다. ADAS 미연결 검증에서는 Simulation Frame을 사용했습니다."
+          "VCU가 Vision ECU의 인식 Result에서 신호등(Green/Red), 속도 표지(30/70), 방지턱, Lane X를 해석하고 주행 방향·속도·정지를 결정합니다.",
+          "Basys 3 VCU는 결정한 명령을 CAN ID 0x110/0x111로 STM32 Motor1·2 ECU에 송신하고, 각 Motor ECU가 좌우 모터를 구동합니다.",
+          "Fault/Heartbeat Timeout에는 Safe Stop을 일반 주행 Event보다 우선합니다. 검증 단계에서는 Vision ECU 인식 Result를 모사한 CAN Frame을 주입한 경로와 실물 Vision ECU 연동을 구분합니다."
         ]
       }
     ],
     "debug": [
       {
-        "issue": "공용 Timing 부재와 자기 송신 Dominant Edge의 Resync",
-        "cause": "모듈별 Tick 기준 및 자기 송신 중 RX Falling Edge의 인식 조건으로 인해 불필요한 Positive Resync가 발생하여 CAN Bit Time이 흔들렸습니다.",
-        "action": "RX/TX 공통 TQ Tick 사용을 제안·반영하고, RX Idle/실제 TX Level을 참고하여 자기 송신 Edge가 Resync 조건을 충족하지 않도록 개선했습니다.",
-        "result": "비정상 2.125 μs 사례를 CAN 500 kbps 기준 2.000 μs/bit로 복원했습니다. 공개 원본 파형은 Hard Sync·Resync이며, 해당 수치 전후 비교 파형은 별도로 제시하지 않습니다."
+        "issue": "1. RX/TX 개별 Tick에 따른 공통 Timing 기준 불일치",
+        "cause": "CAN RX와 TX, Hard Sync와 Resync가 독립적인 Tick 기준을 사용하면 Bit Boundary 및 Sample Point의 Timing 기준이 달라질 수 있는 구조였습니다.",
+        "action": "ACK Timing과 송수신 시점 문제를 검토하는 과정에서 RX/TX 공용 TQ Tick을 직접 제안하고 공통 can_bit_timing 기준으로 구조를 정리했습니다. Hard Sync 시 BRP Counter 초기화도 같은 Timing 경로에서 다룹니다.",
+        "result": "RX/TX가 동일한 Bit Timing Tick과 Sample Point를 공유하도록 구조를 정리했습니다. 이 항목은 자기 송신 Edge Resync 오류와 구분되는 공통 Clock 기준 설계 개선입니다."
       },
       {
-        "issue": "CRC Sequence–Delimiter 경계의 Form Error 전이",
-        "cause": "CRC 수신과 Delimiter 상태의 입력 유효 시점이 맞지 않아 정상 Frame이 RX_ERROR_FLAG로 이동한 이력이 있습니다.",
-        "action": "CRC 15비트 수신, CRC Check, Delimiter의 Recessive 판정 및 FSM 전이를 분리해 검사했습니다.",
-        "result": "현재 기록된 RTL에서는 RX_CRC_DELIMITER에서도 destuff_en=1인 구현 상태를 명시합니다. 해당 State의 최신 구현과 규격상의 일반 설명을 혼동하지 않습니다."
+        "issue": "2. 자기 송신 Dominant Edge에 따른 불필요한 Positive Resync",
+        "cause": "VCU가 직접 송신한 Dominant(0) Edge가 RX Falling Edge로도 검출되어 외부 통신 Edge가 아닌데도 Positive Resync 조건에 진입했습니다.",
+        "action": "rx_idle과 실제 TX Line Level을 Bit Timing의 Resync 판단에 반영하고, 자기 송신 중 검출된 Dominant Edge를 외부 수신 동기화 Edge와 구분하도록 수정했습니다.",
+        "result": "불필요한 Resync에 따른 Bit Time 2.125 μs 이탈 사례를 500 kbps 기준 2.000 μs로 복원했습니다. 공통 Tick 구조 개선의 결과와 혼동하지 않고 별도 원인으로 설명합니다."
       },
       {
-        "issue": "CAN 수신 ISR과 차량 제어 Task의 책임 분리",
-        "cause": "CAN Frame 파싱·ADAS Event·Motor 명령을 Interrupt 내부에서 모두 처리하면 실시간 제어 Task와의 실행 순서를 관리하기 어렵습니다.",
-        "action": "수신 Interrupt는 RX Queue에 Frame을 적재하고, 10 ms Superloop Task에서 Parser–Event–Motor Command–Tx Queue 처리를 수행하도록 설계했습니다.",
-        "result": "수신 처리와 제어 명령 생성을 분리하고 주기 작업의 실행 순서를 명확히 했습니다."
+        "issue": "3. CRC Sequence–Delimiter 경계의 Form Error 전이",
+        "cause": "CRC 수신과 Delimiter 구간의 Input Valid / State 전이가 어긋나 정상 Frame이 RX_ERROR_FLAG로 이동한 디버깅 이력이 있습니다.",
+        "action": "CRC 15bit 수신, CRC Check, Delimiter Recessive 판정 및 FSM 전이를 분리해 확인했습니다.",
+        "result": "현재 RTL에서 RX_CRC_DELIMITER의 destuff_en=1 설정 등 실제 구현 상태를 원본 기록과 일치시켜 명시하고, 일반적인 프로토콜 설명과 혼동하지 않았습니다."
       }
     ],
     "checks": [
       [
-        "CAN RX RTL Simulation",
-        "80 MHz · 500 kbps · 16 TQ의 Hard Sync/Resync 및 Frame/CRC 처리 검토",
-        "본인 구현 · RTL 파형"
+        "CAN Bit Timing / Sync",
+        "80 MHz · 500 kbps · 16 TQ. 공통 TQ Tick 구조와 자기 송신 Edge Resync를 별도 검증",
+        "CAN RX RTL"
       ],
       [
-        "VCU FW 경로",
-        "Basys 3 MicroBlaze에서 CAN RX ISR → RX Queue → 10 ms Superloop → Motor TX Queue",
-        "본인 구현 · 교육 프로젝트"
+        "VCU Firmware",
+        "Vision ECU 인식 Result Format → CAN RX ISR → RX Queue → 10 ms 중앙 제어 Task → Motor Command",
+        "Basys 3 MicroBlaze"
       ],
       [
-        "VCU–Motor 실기기 경로",
-        "ADAS Result는 Simulation Frame 주입 → Basys 3 VCU → 실제 STM32 Motor1·2 ECU",
-        "단계별 통합 검증"
+        "VCU–Motor 실기기 제어",
+        "Vision 인식 결과 Simulation Frame → Basys 3 VCU → 실제 STM32 Motor1·2 ECU",
+        "교육 통합 검증"
       ],
       [
-        "검증 범위 제한",
-        "CNN 기반 실제 ADAS ECU의 End-to-End 연동과 29-bit Extended ID 수신 기능을 본 검증 완료 항목으로 표기하지 않음",
-        "과장 방지"
+        "검증 범위 구분",
+        "실제 Vision ECU 전체 Pipeline End-to-End 및 29-bit Extended ID 수신 기능은 확인 범위로 주장하지 않음",
+        "표현 정확성"
       ]
     ],
-    "scope": "교육 팀 프로젝트. 본인의 주요 구현 내용은 CAN RX RTL의 Sync/Timing/Destuff/Frame/CRC, 공통 Timing 개선 제안 및 Basys 3 MicroBlaze 기반 VCU CAN HAL·Driver·Application입니다. STM32 Motor ECU와 Zynq ADAS 인식부는 시스템의 다른 보드 역할입니다. ADAS 결과 Simulation Frame을 사용한 실기기 제어 경로 검증과 전체 CNN–CAN–Motor 실시간 통합을 구분합니다.",
+    "scope": "교육 팀 프로젝트. Vision ECU(Zynq Z7-20)는 카메라 영상을 인식한 결과를 CAN으로 전달하고, VCU(Basys 3 MicroBlaze)는 수신 데이터를 기반으로 중앙 주행 제어를 수행하며, STM32 Motor1·2 ECU에 명령을 송신합니다. 주요 개인 구현은 CAN RX RTL, 공통 TQ Tick 제안 및 자기 송신 Edge Resync 디버깅, Basys 3 VCU의 CAN HAL·Driver·Application입니다. Vision ECU의 원본 영상 자체를 CAN으로 전송한다는 뜻이 아니며, 공개 검증에는 Vision Result Simulation Frame 주입이 포함됩니다.",
     "source": "https://app.notion.com/p/3e6e09982689810d8a2df537627333a2"
   },
   "fpga-adas-isp": {
