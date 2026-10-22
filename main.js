@@ -15,7 +15,9 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     const cardTop = `<div class="project-card-top"><div class="category-line"><span class="mini-label">${html(p.category)}</span>${featured ? '<span class="featured-word">FEATURED</span>' : ''}</div><span class="card-index">${String(idx + 1).padStart(2, '0')}</span></div>`;
     const left = `<div class="card-col">${cardTop}<h3><a href="${detailLink(p)}">${html(p.title)}</a></h3><span class="period">${html(p.period)}</span><p class="summary">${html(p.summary)}</p>${featured && p.award ? `<div class="award-line">◇ &nbsp;${html(p.award)}</div>` : ''}${featured ? '' : `<ul class="highlights">${p.highlights.map(t=>`<li>${html(t)}</li>`).join('')}</ul>${tagHTML}`}</div>`;
     const right = featured ? `<div class="card-col"><ul class="highlights">${p.highlights.map(t=>`<li>${html(t)}</li>`).join('')}</ul>${tagHTML}</div>` : '';
-    const bottom = `<div class="project-card-footer"><a class="case-link" href="${detailLink(p)}">케이스 스터디 보기 &nbsp;→</a><a class="github-profile-link" href="${html(data.github)}" target="_blank" rel="noopener noreferrer" title="개별 저장소 링크가 아닌 GitHub 프로필입니다">⌘ GitHub 프로필</a></div>`;
+    const evidence = data?.technicalDetails?.[p.slug];
+    const referenceLink = evidence?.github ? `<a class="github-profile-link" href="${html(evidence.github)}" target="_blank" rel="noopener noreferrer">⌘ 관련 GitHub 코드</a>` : (evidence?.source ? `<a class="github-profile-link" href="${html(evidence.source)}" target="_blank" rel="noopener noreferrer">↗ Notion 원본 기록</a>` : "");
+    const bottom = `<div class="project-card-footer"><a class="case-link" href="${detailLink(p)}">케이스 스터디 보기 &nbsp;→</a>${referenceLink}</div>`;
     return `<article class="project-card ${featured ? 'featured-card' : ''}">${left}${right}${bottom}</article>`;
   }
 
