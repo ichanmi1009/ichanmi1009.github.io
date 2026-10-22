@@ -84,7 +84,7 @@ window.PORTFOLIO = {
       takeaway:'영상 파이프라인에서는 데이터 자체뿐 아니라 valid와 주소의 시점까지 정렬해야 합니다.',architecture:['OV7670','Pixel Capture','BRAM','VGA Timing','Display']
     },
     {
-      slug:'axi-soc',title:'AXI4-Lite SoC Peripheral 통합',category:'RTL · SoC',filter:'soc',period:'2026.06.21 — 2026.06.30',
+      slug:'axi-soc',title:'AXI4-Lite SoC Peripheral 통합',category:'RTL · SoC',filter:'soc',filters:['soc','rtl'],period:'2026.06.21 — 2026.06.30',
       summary:'GPIO·Timer·UART·SPI 주변장치를 AXI4-Lite Register Map으로 통합하고 C Firmware와 연결했습니다.',
       role:'AXI4-Lite IP · Register Map · Bare-metal C',tags:['AXI4-Lite','MicroBlaze','C','Vivado','Vitis'],
       highlights:['AXI4-Lite Register Map 구성', 'Custom Peripheral IP 통합', 'MicroBlaze App–Driver–HAL 연동'],
