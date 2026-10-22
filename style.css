@@ -57,3 +57,17 @@
 .evidence-link{display:inline-flex;padding:11px 14px;border:1px solid #c9d8cd;border-radius:7px;background:#fff;color:#10513d!important;font-size:12px;font-weight:700;text-decoration:none}
 .evidence-link:hover{background:#edf6ef}
 @media(max-width:720px){.engineering-modules,.debug-grid{grid-template-columns:1fr}.engineering-focus{padding:18px}.engineering-focus p{font-size:14px}.engineering-module,.debug-card{padding:17px}.engineering-table{font-size:11px}}
+
+
+/* Academic GPA: highlight earned scores without changing the portfolio palette */
+.edu-school-row{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.edu-school-row>strong{font-size:14px;min-width:0;overflow-wrap:anywhere}
+.edu-line-primary{border-top:1px solid #c5dcd0}
+.edu-gpa-value{display:flex;align-items:baseline;gap:4px;flex-shrink:0;font-variant-numeric:tabular-nums;white-space:nowrap}
+.edu-gpa-value strong{font-size:25px;line-height:1.2;letter-spacing:-.8px;color:var(--green);font-weight:800}
+.edu-gpa-value span{font:12px ui-monospace,monospace;color:#7c857e}
+.edu-gpa-secondary strong{font-size:19px;color:#44665a}
+.edu-line-primary>span:last-child{color:#425c4d}
+.hero-meta .hero-gpa{font:11px ui-monospace,monospace;color:#586a5e}
+.hero-meta .hero-gpa strong{font-size:12px;color:var(--green)}
+@media(max-width:380px){.edu-school-row{align-items:flex-start;flex-direction:column;gap:5px}.edu-gpa-value strong{font-size:23px}}
