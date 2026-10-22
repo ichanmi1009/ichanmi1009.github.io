@@ -126,6 +126,13 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     $('#file-index').textContent=String(projects.indexOf(p)+1).padStart(2,'0');
     $('#project-award').innerHTML=p.award?`<div class="award-badge">◇ &nbsp;${html(p.award)}</div>`:'';
     $('#project-stack').innerHTML=badges(p.tags);
+    const projectActions = document.querySelector('.project-actions');
+    if(projectActions && window.PORTFOLIO?.technicalDetails?.[p.slug]){
+      projectActions.insertAdjacentHTML('beforeend','<a class="btn btn-outline" href="#engineering-detail">주요 구현 내용 ↓</a>');
+    }
+    if(projectActions && window.PORTFOLIO?.waveforms?.[p.slug]){
+      projectActions.insertAdjacentHTML('beforeend','<a class="btn btn-outline" href="#waveform-evidence">검증 파형·자료 ↓</a>');
+    }
     $('#context-tags').innerHTML=badges(p.tags.slice(0,5));
     $('#project-context').textContent=p.context;
     const probs = p.problems && p.problems.length?p.problems : [{label:'핵심 설계 과제',text:p.summary},{label:'검증 관점',text:p.highlights[0]}];
