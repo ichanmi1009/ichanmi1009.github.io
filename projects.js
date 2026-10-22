@@ -165,3 +165,635 @@ window.PORTFOLIO = {
     }
   ]
 };
+
+
+// 기술 상세: 원본 노션 설계 기록과 실보드/검증 근거를 기반으로 작성
+window.PORTFOLIO.technicalDetails = {
+  "can-adas": {
+    "focus": "CAN 수신 비트 복원 → Frame 무결성 확인 → VCU Event 처리 → Motor ECU 제어 명령. 시스템 경로를 끊지 않고 각 단계의 책임을 분리했습니다.",
+    "spec": [
+      [
+        "Clock / Bitrate",
+        "80 MHz / 500 kbps",
+        "1bit = 2.000 μs"
+      ],
+      [
+        "TQ 구성",
+        "BRP=9, TSEG1=13, TSEG2=2, SJW=2",
+        "125 ns × 16 TQ, Sample Point 87.5%"
+      ],
+      [
+        "Frame / CRC",
+        "CAN 2.0A Base ID 11-bit, CRC-15 (0x4599)",
+        "Destuffing, ACK, Stuff/Form/CRC Error"
+      ],
+      [
+        "VCU 제어주기",
+        "10 ms Main Task / 100 ms Heartbeat 점검",
+        "RX ISR과 차량 제어 처리 분리"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "CAN RX RTL / 수신 경로",
+        "items": [
+          "2-FF Sync → 공용 TQ Generator / Bit Timing → Destuffer → Frame FSM → CRC-15 → RX Buffer로 분리했습니다.",
+          "SOF, ID(11), RTR·IDE·R0, DLC, DATA, CRC, ACK, EOF/IFS를 상태별로 해석하고, SOF~DATA의 Destuffing된 비트를 CRC 계산에 사용했습니다.",
+          "rx_idle과 실제 TX Level을 Timing 판단에 반영하며 Hard Sync 시 BRP Counter까지 함께 초기화했습니다."
+        ]
+      },
+      {
+        "title": "AXI4-Lite / Register Interface",
+        "items": [
+          "CAN_BTR(0x00): BRP/TSEG1/TSEG2/SJW, CAN_CR(0x04): TX Start/Reset, CAN_SR(0x08): Status/Interrupt Clear를 구분했습니다.",
+          "TX Mailbox/Data 0x0C~0x14, RX Mailbox/Data 0x18~0x20를 두고 frame_done 시 RX 데이터와 상태를 저장했습니다.",
+          "CAN_SR의 RX Interrupt 상태는 W1C 방식으로 Software에서 해제하도록 정의했습니다."
+        ]
+      },
+      {
+        "title": "VCU / Firmware Event 처리",
+        "items": [
+          "RX ISR에서는 Frame을 Queue에 적재하고, Main Superloop에서 CAN_ProcessRx → ADAS Event → Motor Command → CAN_ProcessTx 순으로 처리했습니다.",
+          "Green·Red·30·70·방지턱·차선 좌표를 Event로 변환했습니다. 차선 중심 좌표는 PD 제어를 거쳐 좌·우 Motor 명령에 반영합니다.",
+          "HAL은 CAN Controller Register, Driver는 송수신/Queue, Application은 상태·우선순위·차량 제어 판단을 담당합니다."
+        ]
+      },
+      {
+        "title": "안전 상태와 제어 우선순위",
+        "items": [
+          "Heartbeat·Fault를 100 ms Task에서 점검하고 유효한 Timeout 또는 Fault가 발생하면 Safe Stop을 Latch하도록 구성했습니다.",
+          "Safety Override는 일반 ADAS Event보다 우선하며, Emergency Stop과 두 Motor의 STOP 명령을 우선 Queueing합니다.",
+          "ADAS Simulation 단계에서는 실제 미연결 ADAS ECU의 Timeout을 Mask해 검증 조건을 구분했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "자기 송신 Edge가 Positive Resync를 유발",
+        "cause": "송신 Dominant(0) Edge가 RX Falling Edge로 관측되면서 불필요한 Resync가 적용됐습니다.",
+        "action": "RX/TX 공통 Bit Timing을 유지하면서 RX Idle 및 실제 TX Level을 이용해 자기 Edge에 대한 Resync 조건을 수정했습니다.",
+        "result": "이탈했던 Bit Time 2.125 μs를 500 kbps 기준인 2.000 μs로 복원했습니다."
+      },
+      {
+        "issue": "CRC Sequence–Delimiter 경계 오류",
+        "cause": "수신 CRC 비교와 Delimiter 상태 전이에서 정상 Frame이 Error Flag로 전이하던 이력이 있었습니다.",
+        "action": "CRC 15bit 수신 시점, CRC 비교, Delimiter의 Recessive 확인 조건을 상태별로 확인했습니다.",
+        "result": "현재 RTL에서는 RX_CRC_DELIMITER에서도 destuff_en=1인 점을 그대로 명시합니다. 일반 CAN 규격 설명과 실제 구현 상태를 혼동하지 않습니다."
+      }
+    ],
+    "checks": [
+      [
+        "Simulation / 파형",
+        "Hard Sync·Resync와 2.000 μs Bit Time 확인",
+        "RTL Timing"
+      ],
+      [
+        "CAN 수신 경로",
+        "Frame Parsing·Destuffing·CRC/ACK/Error 구조 검토",
+        "11-bit Base Frame 중심"
+      ],
+      [
+        "실물 ECU 연동",
+        "ADAS Result Simulation Frame → VCU → Motor1·2 ECU Command 경로 확인",
+        "ADAS ECU 전체 실물 연동과 구분"
+      ]
+    ],
+    "scope": "현재 공개 설명의 검증 범위는 ADAS 결과를 Simulation Frame으로 주입하고 실제 Motor1·2 ECU를 연결한 단계입니다. Extended Identifier 18-bit Parsing은 CAN RX 구현 범위에 포함되지 않습니다.",
+    "source": "https://app.notion.com/p/ae2e09982689826c8961811262cdf51b"
+  },
+  "fpga-adas-isp": {
+    "focus": "카메라 1프레임을 여러 영상 처리 경로로 전달하면서 Red 객체 검출 결과를 단일 UART 명령으로 변환했습니다.",
+    "spec": [
+      [
+        "입력 영상",
+        "OV7670 / QVGA 320 × 240",
+        "RGB565 Pixel 기반"
+      ],
+      [
+        "Red Threshold",
+        "R≥18, G≤24, B≤12",
+        "RGB565 성분 비교 후 1-bit Binary"
+      ],
+      [
+        "검출 조건",
+        "Bounding Box 가로·세로 ≥10 px",
+        "중심 X=100~200, Y=80~160"
+      ],
+      [
+        "제어 명령",
+        "0xFF STOP / UART 115200 bps",
+        "Lane 좌표와 STOP 전송 우선순위 분리"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "Red Detect ISP",
+        "items": [
+          "red_filter → r_frame_buffer → Gaussian 3×3 → ROI → red_decoder 데이터 경로를 구성했습니다.",
+          "ROI가 min/max X·Y 좌표를 누적하고 Decoder가 Bounding Box 크기와 중심 좌표를 계산해 유효 객체를 판별했습니다.",
+          "Red 객체 존재 시 0xFF STOP을 요청하고, WAIT_UNRED State에서 객체가 사라질 때까지 불필요한 재송신·재출발을 방지했습니다."
+        ]
+      },
+      {
+        "title": "SoC / UART Interface",
+        "items": [
+          "Custom AXI4-Lite UART IP를 MicroBlaze와 연계하여 RXNE·TC Sticky Flag와 Software W1C Clear를 정의했습니다.",
+          "UART 데이터는 0x01~0xFE 차선 좌표, 0xFF 정지 명령으로 구분하고 충돌하는 좌표 값은 0xFE로 치환했습니다.",
+          "동일 시점에 차선과 STOP이 발생하면 STOP을 우선 전달하도록 Arbitration 기준을 정의했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "Camera 입력 Noise가 Sobel False Edge로 전파",
+        "cause": "일부 Frame에서 카메라 입력의 가로 방향 Noise가 Edge 결과와 차선 X좌표까지 전파됐습니다.",
+        "action": "센서 입력 전원·Clock을 점검하고 0.1 µF Decoupling 및 XCLK 22 Ω Series Resistor를 적용했습니다.",
+        "result": "PCLK 파형과 Sobel 출력 화면의 전·후 비교에서 Noise와 False Edge 영향 완화를 확인했습니다."
+      },
+      {
+        "issue": "정지 직후 재주행 반복",
+        "cause": "Red STOP을 생성한 뒤 FSM이 IDLE로 복귀하면 동일 객체에 대해 정지·재주행 판단이 반복됐습니다.",
+        "action": "WAIT_UNRED State를 추가해 Red 객체가 검출되는 동안 STOP 상태를 유지했습니다.",
+        "result": "유효 Red 객체 지속 시 제어 상태를 유지하도록 FSM 전이를 수정했습니다."
+      }
+    ],
+    "checks": [
+      [
+        "개인 구현",
+        "Red Filter, Frame Buffer, ROI, Decoder, AXI UART IP",
+        "RTL·Register Interface"
+      ],
+      [
+        "전체 시스템",
+        "Red Detect → UART → MicroBlaze → Step Motor 정지 제어",
+        "팀 통합 검증"
+      ],
+      [
+        "영상 처리",
+        "OV7670 320×240 입력 및 Sobel/Red 병렬 처리",
+        "팀 통합 검증"
+      ]
+    ],
+    "scope": "Sobel 차선 인식과 최종 Step Motor 제어는 팀 전체 경로이며, 주요 구현 내용은 Red Detect ISP와 Custom AXI4-Lite UART IP입니다.",
+    "source": "https://app.notion.com/p/8d0e0998268983d589080183fe895ef1"
+  },
+  "spi-i2c-uvm": {
+    "focus": "UVM Scoreboard가 양방향 데이터를 자동 대조하고, Coverage로 실제로 확인한 프로토콜 조건을 수치화했습니다.",
+    "spec": [
+      [
+        "SPI",
+        "Mode 0, Master↔Slave",
+        "상승 Edge Sample · 하강 Edge 갱신"
+      ],
+      [
+        "I2C",
+        "START / Address / ACK / READ·WRITE / STOP",
+        "Slave Address 및 ACK 판단"
+      ],
+      [
+        "시뮬레이션",
+        "VCS / SystemVerilog UVM",
+        "Transaction–Monitor–Scoreboard 구조"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "검증 환경 설계",
+        "items": [
+          "Sequence Item은 전송 Byte, Clock Divider 등 입력 조건을 정의하고 Driver가 DUT를 구동하도록 구성했습니다.",
+          "Monitor는 완료 시점을 기준으로 실제 데이터를 수집해 Analysis Port로 Scoreboard와 Coverage에 전달했습니다.",
+          "SPI의 MOSI/MISO를 양방향 비교하고 I2C WRITE·READ는 각각 수신 데이터와 기대값을 비교했습니다."
+        ]
+      },
+      {
+        "title": "테스트 시나리오",
+        "items": [
+          "SPI Fast(div 2~4) 402건, Normal(8~32) 247건, Slow(64~255) 217건으로 Divider 영역을 나눴습니다.",
+          "I2C는 WRITE 782건, READ 782건을 검증하고 Address·R/W·ACK/NACK 및 경계값 커버리지를 확인했습니다.",
+          "실물 Basys 3·Logic Analyzer에서 SPI SCLK/MOSI/MISO/SS_n 및 RAM Write/Read 경로를 점검했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "I2C START를 인식하지 못해 Driver 대기",
+        "cause": "Reset 해제 전에 명령이 구동되어 m_done이 발생하지 않았습니다.",
+        "action": "Reset 이후 Clocking Block 기준 1주기를 기다린 다음 cmd_start를 인가했습니다.",
+        "result": "START→주소→ACK→DATA→STOP 시퀀스를 정상 검증했습니다."
+      },
+      {
+        "issue": "SPI Edge와 MOSI/MISO 데이터 시점 불일치",
+        "cause": "Half Tick의 적용 구간과 Edge별 역할이 분리되지 않아 Sampling 시점이 밀렸습니다.",
+        "action": "상승 Edge Sample, 하강 Edge Data Update로 역할을 분리하고 Half Tick을 DATA State에서만 사용했습니다.",
+        "result": "RTL 파형과 Logic Analyzer의 전송 Timing을 확인했습니다."
+      }
+    ],
+    "checks": [
+      [
+        "SPI Master→Slave / Slave→Master",
+        "각 866 PASS · FAIL 0",
+        "검증 카운트"
+      ],
+      [
+        "I2C WRITE / READ",
+        "각 782 PASS · FAIL 0",
+        "총 1,564건"
+      ],
+      [
+        "Functional Coverage",
+        "SPI·I2C 각 100%",
+        "정의한 Coverage 항목 기준"
+      ]
+    ],
+    "scope": "Coverage 100%는 정의된 Functional Coverage의 달성률이며 프로토콜의 모든 가능한 오류 상황을 검증했다는 뜻은 아닙니다.",
+    "source": "https://app.notion.com/p/2cee0998268983288d0b01e780c1a52e",
+    "github": "https://github.com/ichanmi1009/UVM_SPI_I2C_Verification"
+  },
+  "ov7670-vga": {
+    "focus": "Pixel Data와 VGA Sync가 서로 다른 Clock Domain 및 BRAM Read Latency를 거치더라도 같은 화면 좌표를 가리키도록 정렬했습니다.",
+    "spec": [
+      [
+        "카메라 Frame",
+        "320 × 240 QVGA",
+        "PCLK/HREF/VSYNC"
+      ],
+      [
+        "VGA 출력",
+        "640 × 480",
+        "2배 좌표 매핑"
+      ],
+      [
+        "Address 산식",
+        "((y≫1)×320)+(x≫1)",
+        "Framebuffer Read"
+      ],
+      [
+        "Memory",
+        "Dual-Port BRAM",
+        "PCLK Write / VGA Read 분리"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "Frame Buffer / Sync 정렬",
+        "items": [
+          "PCLK와 HREF로 유효 Pixel Byte를 수집하고 2 Byte Pixel을 RGB 형식으로 조립했습니다.",
+          "VGA의 640×480 Active 영역 좌표를 절반으로 축소해 320×240 BRAM Read Address로 변환했습니다.",
+          "BRAM 1-Clock Read Latency에 맞춰 DE·HSYNC·VSYNC를 지연시켜 RGB Data와 같은 Pixel을 나타내게 했습니다."
+        ]
+      },
+      {
+        "title": "PS–PL 카메라 제어",
+        "items": [
+          "Zynq PS의 C Application → AXI4-Lite Register → SCCB IP → OV7670 Camera Register 순으로 초기화를 제어했습니다.",
+          "Camera Address/Write/Read/Trigger/DONE·BUSY 및 RESET/PWDN/capture_en Register 항목을 구성했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "ILA에서 BRAM Write Enable이 관찰되지 않음",
+        "cause": "카메라 Pixel Capture는 PCLK Domain인데 ILA는 다른 Clock으로 Sampling하고 있었습니다.",
+        "action": "ILA Sample Clock을 PCLK으로 전환하고 VSYNC Rising Edge Trigger 및 HREF 구간을 점검했습니다.",
+        "result": "Write Enable과 Pixel Data 변화를 관찰했습니다."
+      },
+      {
+        "issue": "검은 화면과 BRAM 1-Clock 출력 지연",
+        "cause": "VGA 출력 문제와 카메라 초기화 문제를 구분해야 했고, BRAM RGB Data가 Sync보다 한 Clock 늦을 수 있었습니다.",
+        "action": "BRAM test.mem 패턴으로 VGA 경로를 먼저 분리 검증하고 동기 신호를 Read Latency만큼 지연했습니다.",
+        "result": "VGA 경로 확인 후 카메라·SCCB 단계로 원인 범위를 좁혔습니다."
+      }
+    ],
+    "checks": [
+      [
+        "Standalone VGA",
+        "test.mem Pattern 정상 출력",
+        "BRAM→VGA 단위"
+      ],
+      [
+        "카메라 캡처",
+        "PCLK/HREF·BRAM Write Enable 관찰",
+        "ILA"
+      ],
+      [
+        "PS–PL 연동",
+        "SCCB Register 제어 및 C Application 연동",
+        "통합 경로"
+      ]
+    ],
+    "scope": "하드웨어 Clock Domain과 Sync 정렬을 설명한 페이지이며, SCCB 예외 처리의 전체 검증을 모두 완료했다는 의미는 아닙니다.",
+    "source": "https://app.notion.com/p/c7ae099826898398ac70014c3debeb27"
+  },
+  "axi-soc": {
+    "focus": "AXI4-Lite Register 접근을 공통 제어 인터페이스로 사용하면서 SPI Transaction의 Command·Address는 Software, Signal Timing은 Hardware로 분리했습니다.",
+    "spec": [
+      [
+        "Processor / Bus",
+        "MicroBlaze / AXI4-Lite",
+        "Memory-mapped Peripheral"
+      ],
+      [
+        "SPI Register",
+        "SR 0x00 / TDR 0x04 / RDR 0x08 / CR 0x0C",
+        "BUSY·DONE / TX·RX / START"
+      ],
+      [
+        "SPI Mode",
+        "CPOL=0 · CPHA=0",
+        "Mode 0 고정"
+      ],
+      [
+        "SPI Slave RAM",
+        "Address 0x00~0x03",
+        "Stopwatch Data Write/Read"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "SoC Bus / Peripheral 통합",
+        "items": [
+          "GPIO·Timer·UART·SPI의 Control/Status Register를 AXI4-Lite 주소 공간에 배치했습니다.",
+          "C Application이 Command→Address→Data를 전송하고 SPI Master Core가 SCLK/MOSI/SS_n 신호를 생성하도록 책임을 분리했습니다.",
+          "GPIO UVM Scoreboard에서 Byte Strobe·방향 설정·핀 값을 반영한 기대값을 비교했습니다."
+        ]
+      },
+      {
+        "title": "Firmware–RTL 검증 데이터 경로",
+        "items": [
+          "TDR Write → CR Start → SR Polling → RDR Read로 SPI 1 Byte Transaction을 수행했습니다.",
+          "Stopwatch 데이터를 Slave RAM 0x00~0x03에 기록한 뒤 재수신하여 Vitis Terminal에 출력했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "SPI Read 시 주소와 관계없이 0x00만 반환",
+        "cause": "Slave RAM Read Address가 실시간 수신값 read_data에 연결돼 Dummy Byte 수신 시 주소가 0x00으로 변경됐습니다.",
+        "action": "ram[read_data] 참조를 Transaction 동안 유지되는 ram[addr]로 변경했습니다.",
+        "result": "Logic Analyzer로 0x00~0x03 Write/Read Data 일치, Vitis Terminal 재출력을 확인했습니다."
+      }
+    ],
+    "checks": [
+      [
+        "SPI Write / Read",
+        "Address 0x00~0x03 데이터 일치",
+        "Logic Analyzer"
+      ],
+      [
+        "Software 통합",
+        "Stopwatch 값 00:00:10.02 재수신 출력",
+        "Vitis Terminal"
+      ],
+      [
+        "GPIO UVM",
+        "정의한 Coverage 100%",
+        "Address·Direction·WSTRB 등"
+      ]
+    ],
+    "scope": "검증 값은 본 프로젝트에서 사용한 Address와 Test Scenario의 결과입니다.",
+    "source": "https://app.notion.com/p/dc4e09982689838bb2640120416487ff",
+    "github": "https://github.com/ichanmi1009/AXI_Peripheral"
+  },
+  "jetson-ai": {
+    "focus": "Jetson의 On-Device 추론 출력을 실제 사용자에게 보이는 Result Pipeline으로 연결했습니다.",
+    "implementation": [
+      {
+        "title": "Detection / 추론 파이프라인",
+        "items": [
+          "Jetson Orin Nano에서 YOLO11 및 MiVOLO 추론 환경을 구성했습니다.",
+          "추론 결과의 탐지·추적 값을 Web UI에 전달해 영상과 함께 확인하도록 구성했습니다."
+        ]
+      },
+      {
+        "title": "구현 점검",
+        "items": [
+          "모델 실행과 Tracking 출력, Web UI 시각화 경로를 각각 확인했습니다.",
+          "정확도·지연시간의 정량 성능이 확인되지 않은 항목은 수치로 표시하지 않았습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "On-Device 실행",
+        "Jetson에서 추론 파이프라인 동작 확인",
+        "수행 환경"
+      ],
+      [
+        "결과 가시화",
+        "추론·추적 정보 Web UI 표시",
+        "시스템 UI"
+      ]
+    ],
+    "scope": "정량 FPS·정확도 데이터는 별도 증빙이 확인되기 전까지 기재하지 않았습니다."
+  },
+  "stm32-keymatrix-pir": {
+    "focus": "동일 주변장치를 CMSIS Register 직접 접근과 HAL API로 다루어 추상화 계층에 따른 차이를 확인했습니다.",
+    "implementation": [
+      {
+        "title": "GPIO 및 Key Matrix",
+        "items": [
+          "핀 Direction/Pull과 Input Data를 설정하고 Key Matrix의 Row/Column Scan으로 키 값을 판별했습니다.",
+          "Key Scan 주기와 입력 변화가 Application에 전달되는 경로를 구성했습니다."
+        ]
+      },
+      {
+        "title": "PIR Sensor 제어",
+        "items": [
+          "PIR 센서 입력 이벤트를 GPIO 기반으로 읽고 제어 로직에 전달했습니다.",
+          "Register 접근과 HAL API 양쪽에서 동일 이벤트 흐름을 비교했습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "Key Scan",
+        "키 입력 상태 감지",
+        "실물 MCU"
+      ],
+      [
+        "PIR Event",
+        "감지 입력과 이벤트 처리",
+        "STM32"
+      ]
+    ],
+    "scope": "센서 반응 시간 등 측정하지 않은 정량 지표는 포함하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/STM32-SmartDoorLock"
+  },
+  "rv32i-cpu": {
+    "focus": "Instruction Decode 결과가 Register File·ALU·PC Update·Writeback MUX를 제어하는 경로를 Single-Cycle 구조로 통합했습니다.",
+    "implementation": [
+      {
+        "title": "CPU Datapath",
+        "items": [
+          "PC → Instruction Decode → Register File → ALU → Writeback 경로를 구성했습니다.",
+          "Opcode와 Instruction Format에 따라 ALU Control, Register Write, Branch/Jump 선택 신호를 분리했습니다."
+        ]
+      },
+      {
+        "title": "명령어 검증",
+        "items": [
+          "37개 지원 Instruction의 연산 및 Data 이동 경로를 테스트했습니다.",
+          "Control Path에서 선택 신호가 바뀌면 Datapath 결과가 어떻게 달라지는지 Waveform으로 추적했습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "ISA 범위",
+        "RV32I 37개 명령 지원",
+        "구현 범위"
+      ],
+      [
+        "RTL 설계",
+        "Single-Cycle Datapath / Decoder 연결",
+        "SystemVerilog"
+      ]
+    ],
+    "scope": "Pipelined CPU나 전체 RISC-V 확장은 구현 범위에 포함하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/RV32I_singlecycle"
+  },
+  "uart-fifo-uvm": {
+    "focus": "Class 기반 Testbench에서 자극 생성·구동·관측·기대값 비교의 책임을 분리했습니다.",
+    "implementation": [
+      {
+        "title": "Testbench Data Flow",
+        "items": [
+          "Generator가 Transaction을 생성하고 Driver가 UART/FIFO 입력 자극으로 변환합니다.",
+          "Monitor는 실제 DUT 입출력을 관찰하고 Scoreboard로 전달해 기대 결과와 비교합니다."
+        ]
+      },
+      {
+        "title": "검증 항목",
+        "items": [
+          "FIFO Push/Pop과 UART 송수신 데이터 경로를 단계별로 점검했습니다.",
+          "구체적인 Coverage 100%를 측정한 프로젝트와 혼동하지 않고 Class 기반 검증 결과로 구분했습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "Class Testbench",
+        "Generator / Driver / Monitor / Scoreboard 경로 구성",
+        "SystemVerilog"
+      ],
+      [
+        "UART / FIFO",
+        "송수신·저장 데이터 비교",
+        "Simulation"
+      ]
+    ],
+    "scope": "UVM 기반 SPI·I2C 프로젝트와 달리 이 항목은 Class-based Verification 중심입니다.",
+    "github": "https://github.com/ichanmi1009/SystemVerilog_Verification"
+  },
+  "uart-fifo-sensor": {
+    "focus": "서로 다른 입력 주기를 갖는 센서 데이터를 FIFO로 완충한 뒤 UART로 PC에 출력했습니다.",
+    "implementation": [
+      {
+        "title": "Sensor Interface",
+        "items": [
+          "DHT11 온습도와 HC-SR04 거리 센서의 입력 값을 FPGA에서 읽습니다.",
+          "센서의 서로 다른 데이터 생성 타이밍을 공통 Buffer 경로에 연결했습니다."
+        ]
+      },
+      {
+        "title": "FIFO · UART",
+        "items": [
+          "센서 결과를 FIFO에 적재하고 UART TX가 순서대로 PC Terminal에 전달하도록 구성했습니다.",
+          "수신 값과 실제 센서 상태가 연동되는지 PC에서 확인했습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "센서 수신",
+        "DHT11 / HC-SR04 입력 처리",
+        "Basys3"
+      ],
+      [
+        "통신 경로",
+        "FIFO → UART → PC Terminal",
+        "Hardware 확인"
+      ]
+    ],
+    "scope": "센서 정밀도·측정 오차에 대한 정량 평가값은 제공된 자료에 없어 기재하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch"
+  },
+  "uart-loopback": {
+    "focus": "16× Oversampling으로 UART Bit 중앙을 Sampling하고, 수신한 Byte를 송신기로 되돌리는 전체 경로를 확인했습니다.",
+    "spec": [
+      [
+        "UART 설정",
+        "9600 bps / 8N1",
+        "Start 1 · Data 8 · Stop 1"
+      ],
+      [
+        "RX Sampling",
+        "16× Oversampling",
+        "Start 검출 후 Data Bit 중심 Sample"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "UART RX / TX FSM",
+        "items": [
+          "Start Bit 검출 후 Bit 중앙 Sample을 기준으로 8 Data Bit를 Shift하여 Byte를 복원했습니다.",
+          "TX는 같은 Baud 설정으로 Start–Data–Stop Frame을 생성합니다."
+        ]
+      },
+      {
+        "title": "Hardware Loopback",
+        "items": [
+          "PC → FPGA UART RX → UART TX → PC로 즉시 되돌려주는 연결을 구현했습니다.",
+          "FPGA 실물에서 전송 Byte와 수신 Byte가 일치하는지 확인했습니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "Frame / Baud",
+        "9600 bps 8N1",
+        "RTL"
+      ],
+      [
+        "PC↔FPGA",
+        "Hardware Loopback 데이터 일치 확인",
+        "보드 테스트"
+      ]
+    ],
+    "scope": "UART 송수신 기능 중심이며 복합 프로토콜 에러 주입이나 장시간 BER 측정 결과를 주장하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/UART_LOOPBACK"
+  },
+  "fpga-stopwatch": {
+    "focus": "동일한 Clock 기준에서 Counter로 시간을 생성하고 FSM으로 시계·스톱워치의 상태 전환을 제어했습니다.",
+    "implementation": [
+      {
+        "title": "Timebase / Counter",
+        "items": [
+          "FPGA System Clock을 이용해 시간 갱신 Tick을 만들고 자리올림 Counter를 구현했습니다.",
+          "시·분·초 데이터를 표시부에서 사용할 형식으로 전달합니다."
+        ]
+      },
+      {
+        "title": "FSM / 표시 제어",
+        "items": [
+          "Stopwatch / Watch Mode에 따라 시간 증가 및 표시 경로를 선택합니다.",
+          "7-Segment Scan과 출력 데이터를 연결하여 Basys 3에서 표시합니다."
+        ]
+      }
+    ],
+    "checks": [
+      [
+        "FSM",
+        "Mode 전환",
+        "RTL"
+      ],
+      [
+        "7-Segment",
+        "Time Count 출력",
+        "Basys3"
+      ]
+    ],
+    "scope": "추가적인 Stopwatch 정확도 측정치나 별도 Timing Closure 지표는 표시하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/stopwatch-watch"
+  }
+};
