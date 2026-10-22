@@ -94,24 +94,24 @@ window.PORTFOLIO = {
       takeaway:'SoC 동작은 RTL 인터페이스와 SW Register 규약이 일치해야 완성된다는 점을 확인했습니다.',architecture:['MicroBlaze','AXI4-Lite','Register Map','Peripheral','Firmware']
     },
     {
-      slug:'jetson-ai',title:'Jetson Orin Nano 온디바이스 AI 파이프라인',category:'온디바이스 AI',filter:'ai',period:'2026.08.05 — 2026.08.19',
-      summary:'Jetson Orin Nano에서 YOLO11과 MiVOLO를 구동하고 검출·추적 결과를 Web UI로 확인하는 파이프라인을 구성했습니다.',
-      role:'Inference Pipeline · Tracking · Web UI',tags:['Jetson Orin Nano','YOLO11','MiVOLO','Web UI'],
-      highlights:['YOLO11 / MiVOLO 추론 구성', 'Jetson On-Device 실행 환경', '결과 확인용 Web UI 연동'],
-      context:'Edge Device에서 영상 추론 결과를 시각화하는 온디바이스 AI 프로젝트입니다.',
-      steps:[{"heading":"Jetson Orin Nano 실행 환경","text":"Jetson Orin Nano에서 YOLO11·MiVOLO 추론을 실행하도록 영상 입력과 모델 실행 환경을 구성했습니다."},{"heading":"Detection · Tracking 흐름","text":"객체 검출 결과를 Tracking 정보 및 후속 분석 결과와 연결하는 처리 경로를 구성했습니다."},{"heading":"Web UI 결과 확인","text":"영상과 인식·추적 결과를 Web UI에 표시했습니다. 측정하지 않은 FPS·정확도는 수치화하지 않았습니다."}],
-      verification:['Jetson 환경에서 추론 파이프라인 실행', 'Web UI 결과 표시 확인'],
-      takeaway:'모델 출력이 사용 가능한 시스템 정보가 되려면 전처리와 후처리, UI 경로를 함께 고려해야 합니다.',architecture:['Camera / Video','YOLO11','Tracking','MiVOLO','Web UI']
+      slug:'jetson-ai',title:"Jetson Orin Nano 차량 안전 AI · 2열 잔류 감지",category:'온디바이스 AI',filter:'ai',period:'2026.08.05 — 2026.08.19',
+      summary:"YOLO11n/s/m을 Edge 성능·Young Recall로 비교하고 YOLO11n Fine-tuning으로 아동 Recall 75.31%→93.83%를 개선했습니다.",
+      role:"2열 잔류 감지 · YOLO11 성능 평가/Fine-tuning · Web UI · 팀장",tags:['Jetson Orin Nano','YOLO11','MiVOLO','Web UI'],
+      highlights:["Young Recall 75.31% → 93.83% (+18.52%p)","Animal Recall 86.67% → 96.67% (+10.00%p)","Jetson Orin Nano 모델 선정 · Web UI 경고 파이프라인"],
+      context:"운전자·2열·보안 카메라의 세 서브시스템을 가진 팀 프로젝트입니다. 주요 구현 내용은 2열 아동·반려동물 감지와 모델 선정·Fine-tuning·Edge 성능 비교입니다.",
+      steps:[{"heading":"YOLO11n/s/m 비교","text":"Young·Animal Recall, Latency, Parameters, FLOPs를 비교해 아동 미검출 위험이 낮은 YOLO11n을 Base Model로 선정했습니다."},{"heading":"YOLO11n Fine-tuning","text":"Train 268장·Validation 35장, 앞 10 Layer Freeze, AdamW 0.0005, 10 Epoch로 Person/Cat/Dog 학습을 진행했습니다."},{"heading":"Edge Pipeline / 경고","text":"Jetson에서 Detection→Tracking→MiVOLO Age→잔류 시간 Stage→Web UI로 연결하고 Demo에서는 10/15/20초로 경고를 검증했습니다."}],
+      verification:["Unified Evaluation 211: Young Recall 75.31%→93.83%, Animal Recall 86.67%→96.67%","Person Detection Rate 78.81%→99.34%, Young Miss 17건→0건","시연 경고 Stage 10/15/20초·Jetson TensorRT·MiVOLO TorchScript 동작 확인"],
+      takeaway:'모델 출력이 사용 가능한 시스템 정보가 되려면 전처리와 후처리, UI 경로를 함께 고려해야 합니다.',architecture:["Webcam · 2열","YOLO11n Detection","Tracking","MiVOLO V2 · Age","Risk Stage · Web UI"]
     },
     {
-      slug:'stm32-keymatrix-pir',title:'CMSIS KeyMatrix · PIR 센서 제어',category:'MCU · Firmware',filter:'firmware',period:'2026.07.23 — 2026.07.27',
-      summary:'STM32에서 CMSIS Register 접근과 HAL을 비교하며 Key Matrix와 PIR 센서를 Bare-metal로 제어했습니다.',
-      role:'STM32 Register / HAL · Key Matrix · PIR',tags:['STM32','CMSIS','HAL','Bare-metal'],
-      highlights:['CMSIS Register / HAL 구현', 'Key Matrix 스캔 처리', 'PIR 센서 입력 확인'],
-      context:'MCU 주변장치를 Register 단위와 HAL 두 방식으로 다뤄보며 제어 계층의 차이를 익힌 프로젝트입니다.',
-      steps:[{"heading":"CMSIS Register · HAL 비교","text":"GPIO Direction/Pull/Input 설정을 Register 접근과 HAL API로 비교하며 STM32 주변장치 초기화 경로를 구성했습니다."},{"heading":"Key Matrix Row/Column Scan","text":"행·열 GPIO의 출력과 입력을 순차 확인해 눌린 Key를 판정했습니다."},{"heading":"PIR Sensor Event","text":"PIR Sensor 입력의 변화를 감지 Event로 전달하고 Key Scan과 별도로 처리했습니다."}],
-      verification:['키 입력 스캔 동작', 'PIR 센서 이벤트 처리'],
-      takeaway:'상위 API뿐 아니라 내부 Register 설정을 이해해야 주변장치 동작을 추적하기 쉽습니다.',architecture:['GPIO Input','CMSIS / HAL','Key Scan','PIR Input','Application']
+      slug:'stm32-keymatrix-pir',title:"STM32 CMSIS Bare-metal 스마트 도어락",category:'MCU · Firmware',filter:'firmware',period:'2026.07.23 — 2026.07.27',
+      summary:"STM32F411RE에서 HAL 없이 CMSIS Register로 GPIO·EXTI·Timer·I2C를 제어해 PIR–4×4 Keypad–Servo–LCD 도어락을 구현했습니다.",
+      role:"STM32F411RE CMSIS Register · Keypad FSM · PIR EXTI · Servo/I2C LCD",tags:['STM32','CMSIS','HAL','Bare-metal'],
+      highlights:["HAL 없이 GPIO·EXTI·TIM·I2C Register 직접 제어","Key Matrix 중복 입력을 비블로킹 FSM으로 해결","PIR→4자리 인증→Servo·LCD·Buzzer PASS"],
+      context:"교육에서 수행한 STM32F411RE Nucleo-64 Bare-metal C 프로젝트입니다. HAL을 사용하지 않고 CMSIS Register 직접 접근으로 PIR EXTI2, Keypad 4×4, TIM5 Servo PWM, TIM3 Buzzer PWM, I2C LCD를 통합했습니다.",
+      steps:[{"heading":"CMSIS Peripheral 직접 초기화","text":"RCC·GPIO·SYSCFG/EXTI/NVIC·TIM PWM·I2C의 Register 접근과 초기화 순서를 구성했습니다."},{"heading":"4×4 Keypad 비블로킹 FSM","text":"IDLE→SET_ROW→READ_ROW→KEY_RELEASE로 Row 출력과 Column Sampling을 분리해 Key가 중복 인식되던 문제를 해결했습니다."},{"heading":"PIR·인증·출력 통합","text":"PD2 EXTI2에서 접근을 감지해야 Keypad가 활성화되고 비밀번호 일치 시 TIM5 Servo·I2C LCD·TIM3 Buzzer에 결과를 출력합니다."}],
+      verification:["PIR 미감지 시 Keypad 비활성 및 감지 후 인증 시퀀스 PASS","정상·오류 비밀번호, 입력 취소, 비밀번호 변경 PASS","중복 Key와 상태값 덮어쓰기 버그 수정 후 실보드 동작 확인"],
+      takeaway:'상위 API뿐 아니라 내부 Register 설정을 이해해야 주변장치 동작을 추적하기 쉽습니다.',architecture:["PIR EXTI2","Keypad 4×4 FSM","Password Check","TIM5 Servo / TIM3 Buzzer","I2C LCD"]
     },
     {
       slug:'rv32i-cpu',title:'RV32I 37명령 Single-Cycle CPU',category:'RTL · CPU',filter:'rtl',period:'2026.05.19 — 2026.05.27',
