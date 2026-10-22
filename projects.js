@@ -106,7 +106,7 @@ window.PORTFOLIO = {
     {
       slug:'stm32-keymatrix-pir',title:"STM32 CMSIS Bare-metal 스마트 도어락",category:'MCU · Firmware',filter:'firmware',period:'2026.07.23 — 2026.07.27',
       summary:"STM32F411RE에서 HAL 없이 CMSIS Register로 GPIO·EXTI·Timer·I2C를 제어해 PIR–4×4 Keypad–Servo–LCD 도어락을 구현했습니다.",
-      role:"STM32F411RE CMSIS Register · Keypad FSM · PIR EXTI · Servo/I2C LCD",tags:['STM32','CMSIS','HAL','Bare-metal'],
+      role:"STM32F411RE CMSIS Register · Keypad FSM · PIR EXTI · Servo/I2C LCD",tags:['STM32F411RE','CMSIS','Bare-metal C','GPIO/EXTI','I2C/PWM'],
       highlights:["HAL 없이 GPIO·EXTI·TIM·I2C Register 직접 제어","Key Matrix 중복 입력을 비블로킹 FSM으로 해결","PIR→4자리 인증→Servo·LCD·Buzzer PASS"],
       context:"교육에서 수행한 STM32F411RE Nucleo-64 Bare-metal C 프로젝트입니다. HAL을 사용하지 않고 CMSIS Register 직접 접근으로 PIR EXTI2, Keypad 4×4, TIM5 Servo PWM, TIM3 Buzzer PWM, I2C LCD를 통합했습니다.",
       steps:[{"heading":"CMSIS Peripheral 직접 초기화","text":"RCC·GPIO·SYSCFG/EXTI/NVIC·TIM PWM·I2C의 Register 접근과 초기화 순서를 구성했습니다."},{"heading":"4×4 Keypad 비블로킹 FSM","text":"IDLE→SET_ROW→READ_ROW→KEY_RELEASE로 Row 출력과 Column Sampling을 분리해 Key가 중복 인식되던 문제를 해결했습니다."},{"heading":"PIR·인증·출력 통합","text":"PD2 EXTI2에서 접근을 감지해야 Keypad가 활성화되고 비밀번호 일치 시 TIM5 Servo·I2C LCD·TIM3 Buzzer에 결과를 출력합니다."}],
@@ -361,7 +361,24 @@ window.PORTFOLIO.technicalDetails = {
       ]
     ],
     "scope": "Sobel 차선 인식과 최종 Step Motor 제어는 팀 전체 경로이며, 주요 구현 내용은 Red Detect ISP와 Custom AXI4-Lite UART IP입니다.",
-    "source": "https://app.notion.com/p/8d0e0998268983d589080183fe895ef1"
+    "source": "https://app.notion.com/p/8d0e0998268983d589080183fe895ef1",
+    "metrics": [
+      {
+        "value": "0xFF",
+        "label": "Red STOP",
+        "detail": "WAIT_UNRED 정지 유지"
+      },
+      {
+        "value": "10 px",
+        "label": "ROI 최소 크기",
+        "detail": "Center X100~200"
+      },
+      {
+        "value": "115200",
+        "label": "UART bps",
+        "detail": "ISP → Control Board"
+      }
+    ]
   },
   "spi-i2c-uvm": {
     "focus": "UVM Scoreboard가 양방향 데이터를 자동 대조하고, Coverage로 실제로 확인한 프로토콜 조건을 수치화했습니다.",
@@ -433,7 +450,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "Coverage 100%는 정의된 Functional Coverage의 달성률이며 프로토콜의 모든 가능한 오류 상황을 검증했다는 뜻은 아닙니다.",
     "source": "https://app.notion.com/p/2cee0998268983288d0b01e780c1a52e",
-    "github": "https://github.com/ichanmi1009/UVM_SPI_I2C_Verification"
+    "github": "https://github.com/ichanmi1009/UVM_SPI_I2C_Verification",
+    "metrics": [
+      {
+        "value": "866",
+        "label": "SPI PASS",
+        "detail": "MOSI/MISO 각 866"
+      },
+      {
+        "value": "1,564",
+        "label": "I2C PASS",
+        "detail": "WRITE/READ 각 782"
+      },
+      {
+        "value": "100%",
+        "label": "Functional Coverage",
+        "detail": "정의한 Coverpoint 기준"
+      }
+    ]
   },
   "ov7670-vga": {
     "focus": "Pixel Data와 VGA Sync가 서로 다른 Clock Domain 및 BRAM Read Latency를 거치더라도 같은 화면 좌표를 가리키도록 정렬했습니다.",
@@ -508,7 +542,24 @@ window.PORTFOLIO.technicalDetails = {
       ]
     ],
     "scope": "하드웨어 Clock Domain과 Sync 정렬을 설명한 페이지이며, SCCB 예외 처리의 전체 검증을 모두 완료했다는 의미는 아닙니다.",
-    "source": "https://app.notion.com/p/c7ae099826898398ac70014c3debeb27"
+    "source": "https://app.notion.com/p/c7ae099826898398ac70014c3debeb27",
+    "metrics": [
+      {
+        "value": "320×240",
+        "label": "Camera Frame",
+        "detail": "QVGA"
+      },
+      {
+        "value": "640×480",
+        "label": "VGA 출력",
+        "detail": "2배 Mapping"
+      },
+      {
+        "value": "1 Clock",
+        "label": "BRAM Read Latency",
+        "detail": "Sync/DE 정렬"
+      }
+    ]
   },
   "axi-soc": {
     "focus": "AXI4-Lite Register 접근을 공통 제어 인터페이스로 사용하면서 SPI Transaction의 Command·Address는 Software, Signal Timing은 Hardware로 분리했습니다.",
@@ -578,7 +629,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "검증 값은 본 프로젝트에서 사용한 Address와 Test Scenario의 결과입니다.",
     "source": "https://app.notion.com/p/dc4e09982689838bb2640120416487ff",
-    "github": "https://github.com/ichanmi1009/AXI_Peripheral"
+    "github": "https://github.com/ichanmi1009/AXI_Peripheral",
+    "metrics": [
+      {
+        "value": "0x00~03",
+        "label": "Slave RAM",
+        "detail": "SPI Read/Write 확인"
+      },
+      {
+        "value": "100%",
+        "label": "GPIO UVM Coverage",
+        "detail": "정의한 항목 기준"
+      },
+      {
+        "value": "4 Reg",
+        "label": "SPI AXI4-Lite",
+        "detail": "SR/TDR/RDR/CR"
+      }
+    ]
   },
   "jetson-ai": {
     "focus": "차량 안전 시스템에서 놓치면 안 되는 대상을 우선했습니다. YOLO11n/s/m의 전체 Accuracy만 보지 않고 아동(Young) Recall과 Edge 연산 자원을 비교한 뒤 Fine-tuning과 Jetson 실행 파이프라인까지 연결했습니다.",
@@ -690,7 +758,24 @@ window.PORTFOLIO.technicalDetails = {
       ]
     ],
     "scope": "3인 팀 프로젝트(팀장). 개인 구현 및 분석 중심은 2열 잔류 객체 검출, YOLO 모델 비교·Fine-tuning, Edge Performance Trade-off, 결과 Web UI 시연입니다. 1열 졸음 및 외부 보안 하위 시스템을 모두 개인 구현으로 표현하지 않았습니다. 지표는 Notion에 기록된 평가 조건에서의 결과입니다.",
-    "source": "https://app.notion.com/p/cc5e0998268982c2900e014356023108"
+    "source": "https://app.notion.com/p/cc5e0998268982c2900e014356023108",
+    "metrics": [
+      {
+        "value": "93.83%",
+        "label": "Young Recall",
+        "detail": "+18.52%p"
+      },
+      {
+        "value": "96.67%",
+        "label": "Animal Recall",
+        "detail": "+10.00%p"
+      },
+      {
+        "value": "95.26%",
+        "label": "Final Accuracy",
+        "detail": "Unified Evaluation 211"
+      }
+    ]
   },
   "stm32-keymatrix-pir": {
     "focus": "STM32F411RE에서 HAL 없이 CMSIS Peripheral Register로 시스템을 구현했습니다. PIR EXTI가 Key Matrix를 활성화하고, 비밀번호 인증 결과가 Servo·I2C LCD·Buzzer로 이어지도록 설계했습니다.",
@@ -790,7 +875,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "교육 프로젝트이며 회사 Firmware 실무가 아닙니다. 실보드 MCU는 STM32F411RE입니다. HAL API 비교가 아니라 CMSIS Register 직접 제어한 Bare-metal 구현입니다.",
     "source": "https://app.notion.com/p/323e0998268983ab8d8b011904c550a6",
-    "github": "https://github.com/ichanmi1009/STM32-SmartDoorLock"
+    "github": "https://github.com/ichanmi1009/STM32-SmartDoorLock",
+    "metrics": [
+      {
+        "value": "CMSIS",
+        "label": "HAL 미사용",
+        "detail": "STM32F411RE"
+      },
+      {
+        "value": "4×4",
+        "label": "Key Matrix",
+        "detail": "비블로킹 Scan FSM"
+      },
+      {
+        "value": "PASS",
+        "label": "실보드 인증",
+        "detail": "PIR·Servo·LCD"
+      }
+    ]
   },
   "rv32i-cpu": {
     "focus": "RV32I Single-Cycle CPU의 37개 명령을 구현하고 RISC-V GCC로 변환한 C 1~10 누적합 프로그램에서 sum=55, 완료 표시 0x12345678까지 확인했습니다.",
@@ -874,7 +976,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "RV32I 37명령 Single-Cycle 구현이며 Pipeline·Cache·전체 ISA 확장은 구현 범위가 아닙니다.",
     "source": "https://app.notion.com/p/caae0998268982029a8281b6886daa8b",
-    "github": "https://github.com/ichanmi1009/RV32I_singlecycle"
+    "github": "https://github.com/ichanmi1009/RV32I_singlecycle",
+    "metrics": [
+      {
+        "value": "37",
+        "label": "RV32I 명령어",
+        "detail": "Single-Cycle"
+      },
+      {
+        "value": "55",
+        "label": "C 누적합 결과",
+        "detail": "1~10 합산"
+      },
+      {
+        "value": "0x12345678",
+        "label": "완료 표시",
+        "detail": "data_ram[59]"
+      }
+    ]
   },
   "uart-fifo-uvm": {
     "focus": "SystemVerilog Class·Mailbox·Event로 UART와 FIFO의 자동검증 환경을 구성했습니다. DUT 전송 완료와 Testbench 다음 자극 시점을 분리하고, FIFO 데이터 순서를 Scoreboard Queue로 비교했습니다.",
@@ -974,7 +1093,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "UVM 1.2를 적용한 SPI·I2C 별도 프로젝트와 다르게 SystemVerilog Class 기반 검증입니다. FIFO 344 PASS는 Random 500회 중 실제 Pop 비교가 수행된 회수입니다.",
     "source": "https://app.notion.com/p/8a7e099826898201be420132330326a9",
-    "github": "https://github.com/ichanmi1009/SystemVerilog_Verification"
+    "github": "https://github.com/ichanmi1009/SystemVerilog_Verification",
+    "metrics": [
+      {
+        "value": "500",
+        "label": "UART RX PASS",
+        "detail": "TX도 500 PASS"
+      },
+      {
+        "value": "344",
+        "label": "FIFO Pop 비교",
+        "detail": "500 Random Trial"
+      },
+      {
+        "value": "500",
+        "label": "Loopback PASS",
+        "detail": "FAIL 0"
+      }
+    ]
   },
   "uart-fifo-sensor": {
     "focus": "3인 팀 통합 프로젝트에서 DHT11 40-bit 수신 RTL과 Mode별 FND Controller를 구현했습니다. Sensor 수신 중 Display 값이 바뀌지 않도록 Checksum·STOP·Valid·출력 Register 조건을 분리했습니다.",
@@ -1080,7 +1216,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "주요 구현 내용은 DHT11 Controller와 FND Controller이며 HC-SR04·UART/FIFO/ASCII Decoder 전체를 개인 구현으로 표현하지 않았습니다.",
     "source": "https://app.notion.com/p/608e099826898246b15281d7d240d36e",
-    "github": "https://github.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch"
+    "github": "https://github.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch",
+    "metrics": [
+      {
+        "value": "40 bit",
+        "label": "DHT11 Frame",
+        "detail": "Checksum 포함"
+      },
+      {
+        "value": "33 / 27",
+        "label": "습도 / 온도",
+        "detail": "실제 수신 Test Data"
+      },
+      {
+        "value": "1 kHz",
+        "label": "FND Scan",
+        "detail": "Mode MUX"
+      }
+    ]
   },
   "uart-loopback": {
     "focus": "100 MHz FPGA System Clock에서 9600 bps·8N1·16× Oversampling UART RX/TX RTL을 구현하고, 수신 완료 Pulse를 TX Start에 직접 연결하는 Hardware Loopback을 Basys 3 실보드로 확인했습니다.",
@@ -1112,7 +1265,7 @@ window.PORTFOLIO.technicalDetails = {
         "items": [
           "TX는 IDLE→START→DATA→STOP에서 LSB First 8bit를 전송하고 tx_busy로 중복 요청을 제한했습니다.",
           "RX는 Start Falling Edge 이후 중앙에서 다시 Low를 확인하고 16 Tick 간격으로 Data Bit를 Sampling합니다.",
-          "수신 8Byte?가 아니라 8bit 1Byte 완료 시 rx_done 1Clock Pulse를 생성합니다."
+          "수신 8bit 1Byte 수신 완료 시 rx_done 1Clock Pulse를 생성합니다."
         ]
       },
       {
@@ -1169,7 +1322,24 @@ window.PORTFOLIO.technicalDetails = {
         "result": "Start 검출 후 데이터 수신으로 넘어가는 조건을 강화했습니다."
       }
     ],
-    "source": "https://app.notion.com/p/f95e09982689827cad1081cf15360488"
+    "source": "https://app.notion.com/p/f95e09982689827cad1081cf15360488",
+    "metrics": [
+      {
+        "value": "9600",
+        "label": "Baud Rate",
+        "detail": "8N1 · LSB First"
+      },
+      {
+        "value": "16×",
+        "label": "Oversampling",
+        "detail": "중앙 Sample"
+      },
+      {
+        "value": "PASS",
+        "label": "실보드 Loopback",
+        "detail": "PC↔Basys3"
+      }
+    ]
   },
   "fpga-stopwatch": {
     "focus": "2인 팀 프로젝트에서 Watch Control/Datapath와 Top Module을 담당했습니다. 4-bit Shift Register로 수정 자릿수를 선택하고, Safety Gate와 Registered Output을 적용한 뒤 Stopwatch와 FND 자원을 통합했습니다.",
@@ -1259,7 +1429,24 @@ window.PORTFOLIO.technicalDetails = {
     ],
     "scope": "2인 팀 프로젝트. 본인 담당은 Watch Control·Datapath 및 Top Integration이며 Stopwatch Datapath를 단독으로 설계했다고 표현하지 않았습니다.",
     "source": "https://app.notion.com/p/ae1e0998268982519873817e261e821c",
-    "github": "https://github.com/ichanmi1009/stopwatch-watch"
+    "github": "https://github.com/ichanmi1009/stopwatch-watch",
+    "metrics": [
+      {
+        "value": "4 bit",
+        "label": "Watch 자릿수 선택",
+        "detail": "0001→0010→0100→1000"
+      },
+      {
+        "value": "100 Hz",
+        "label": "Time Tick",
+        "detail": "10 ms"
+      },
+      {
+        "value": "PASS",
+        "label": "Basys 3 실보드",
+        "detail": "Watch/Stopwatch"
+      }
+    ]
   }
 };
 
@@ -1438,6 +1625,20 @@ window.PORTFOLIO.waveforms = {
         "title": "AM/PM Switching Simulation",
         "caption": "오전/오후 전환 상태 검증",
         "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/am-pm-simulation.png"
+      }
+    ]
+  },
+  "stm32-keymatrix-pir": {
+    "images": [
+      {
+        "title": "STM32F411RE Smart Door Lock 하드웨어",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/STM32-SmartDoorLock/main/docs/images/hardware.jpg",
+        "caption": "CMSIS 직접 제어 기반 STM32·Keypad·PIR·Servo 실제 배선 구성"
+      },
+      {
+        "title": "4×4 Key Matrix Layout",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/STM32-SmartDoorLock/main/docs/images/keypad_layout.png",
+        "caption": "Row/Column Scanning과 Key 배열에 사용한 구성도"
       }
     ]
   }
