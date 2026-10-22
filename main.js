@@ -156,5 +156,8 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
   setupCards();
   setupCopy();
   setupProjectDetail();
+  if (!viewingDetail && location.hash === '#projects') {
+    requestAnimationFrame(() => document.querySelector('#projects')?.scrollIntoView({block:'start'}));
+  }
 })();
 
