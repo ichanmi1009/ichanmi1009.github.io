@@ -21,3 +21,39 @@
 /* 레퍼런스 이미지 하단 설명과 안내 카드의 겹침 방지 */
 .pcb-caption{left:auto;right:27px;text-align:right}
 @media(max-width:600px){.pcb-caption{right:16px;bottom:25px}.pcb-caption strong{font-size:10px}.pcb-caption span{font-size:9px}}
+
+
+/* Detailed case study: verified design decisions and evidence */
+.engineering-section{background:#f7f5f1}
+.engineering-section .section-intro{margin-bottom:24px}
+.engineering-focus{background:#eaf1ec;border:1px solid #cbdcd0;border-radius:12px;padding:22px 25px;margin-bottom:23px}
+.engineering-focus>span,.engineering-subhead>span,.debug-index{font-family:monospace;font-size:10px;letter-spacing:1.65px;color:#1c694d}
+.engineering-focus p{font-size:16px;font-weight:600;line-height:1.9;color:#1b372b;margin:9px 0 0}
+.engineering-subhead{margin:34px 0 16px}
+.engineering-subhead h3{font-size:21px;letter-spacing:-.7px;margin:8px 0}
+.engineering-modules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.engineering-module{background:#fff;border:1px solid #e6e1d7;border-radius:12px;padding:20px;display:flex;gap:14px;align-items:flex-start}
+.engineering-module-no{font:700 11px monospace;color:#ad7054;padding-top:4px}
+.engineering-module h3{font-size:16px;line-height:1.5;margin:0 0 13px;color:#142b20}
+.engineering-list{margin:0;padding:0 0 0 18px;color:#485d50;line-height:1.9;font-size:13px}
+.engineering-list li+li{margin-top:10px}
+.engineering-table-wrap{border:1px solid #dfded7;background:white;overflow-x:auto;border-radius:11px}
+.engineering-table{width:100%;border-collapse:collapse;font-size:12px;line-height:1.65;min-width:520px}
+.engineering-table thead{background:#edf3ee;color:#164d3b}
+.engineering-table th,.engineering-table td{text-align:left;padding:14px 16px;border-bottom:1px solid #eae8e0;vertical-align:top}
+.engineering-table th{white-space:nowrap;font-weight:700}
+.engineering-table td:first-child{font-weight:700;color:#1a392b;width:25%}
+.engineering-table tr:last-child td{border-bottom:0}
+.debug-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.debug-card{border:1px solid #dce4db;background:#fff;border-radius:11px;padding:23px}
+.debug-card h4{font-size:16px;margin:10px 0 20px;line-height:1.5}
+.debug-card dl{margin:0}
+.debug-card dl>div{border-top:1px solid #efede8;padding:11px 0}
+.debug-card dt{font-weight:700;color:#13593e;font-size:11px;margin-bottom:6px}
+.debug-card dd{color:#526059;margin:0;font-size:12px;line-height:1.9}
+.engineering-scope{border-left:3px solid #bb9a6e;background:#fdfbf8;padding:15px 18px;color:#5c554d;line-height:1.8;font-size:12px;margin:28px 0 0}
+.engineering-scope strong{display:inline-block;margin-right:10px;color:#74563e}
+.evidence-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:21px}
+.evidence-link{display:inline-flex;padding:11px 14px;border:1px solid #c9d8cd;border-radius:7px;background:#fff;color:#10513d!important;font-size:12px;font-weight:700;text-decoration:none}
+.evidence-link:hover{background:#edf6ef}
+@media(max-width:720px){.engineering-modules,.debug-grid{grid-template-columns:1fr}.engineering-focus{padding:18px}.engineering-focus p{font-size:14px}.engineering-module,.debug-card{padding:17px}.engineering-table{font-size:11px}}
