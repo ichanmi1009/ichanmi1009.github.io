@@ -71,6 +71,26 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     }));
   }
 
+
+  function renderEngineeringDetails(p){
+    const d=window.PORTFOLIO?.technicalDetails?.[p.slug];
+    if(!d)return;
+    const itemList=(values)=>'<ul class="engineering-list">'+(values||[]).map(v=>'<li>'+html(v)+'</li>').join('')+'</ul>';
+    const specs=d.spec?.length?'<div class="engineering-table-wrap"><table class="engineering-table"><thead><tr><th>설계 항목</th><th>설정 / 구현</th><th>확인 목적</th></tr></thead><tbody>'+d.spec.map(row=>'<tr>'+row.map(v=>'<td>'+html(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>':'';
+    const implementations=(d.implementation||[]).map((b,i)=>'<article class="engineering-module"><div class="engineering-module-no">'+String(i+1).padStart(2,'0')+'</div><div><h3>'+html(b.title)+'</h3>'+itemList(b.items)+'</div></article>').join('');
+    const debugs=d.debug?.length?'<div class="engineering-subhead"><span>ROOT CAUSE ANALYSIS</span><h3>트러블슈팅: 원인부터 검증까지</h3></div><div class="debug-grid">'+d.debug.map((v,i)=>'<article class="debug-card"><div class="debug-index">ISSUE '+String(i+1).padStart(2,'0')+'</div><h4>'+html(v.issue)+'</h4><dl><div><dt>발견 / 원인</dt><dd>'+html(v.cause)+'</dd></div><div><dt>설계 수정</dt><dd>'+html(v.action)+'</dd></div><div><dt>확인 결과</dt><dd>'+html(v.result)+'</dd></div></dl></article>').join('')+'</div>':'';
+    const checks=d.checks?.length?'<div class="engineering-subhead"><span>VERIFICATION EVIDENCE</span><h3>무엇으로 확인했는가</h3></div><div class="engineering-table-wrap"><table class="engineering-table"><thead><tr><th>검증 항목</th><th>확인 결과</th><th>확인 범위</th></tr></thead><tbody>'+d.checks.map(row=>'<tr>'+row.map(v=>'<td>'+html(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>':'';
+    const links=(d.source?'<a class="evidence-link" target="_blank" rel="noopener noreferrer" href="'+html(d.source)+'">Notion 상세 기록 ↗</a>':'')+(d.github?'<a class="evidence-link" target="_blank" rel="noopener noreferrer" href="'+html(d.github)+'">관련 GitHub 코드 ↗</a>':'');
+    const content='<section class="section section-alt engineering-section" id="engineering-detail"><div class="container"><div class="section-intro"><span class="section-num">04.5 <span></span> ENGINEERING DETAILS</span><h2>설계의 근거와 검증을 남겼습니다</h2><p>단순 기능 나열보다 구현 조건, 판단 근거, 원인 분석, 검증 범위를 우선해 정리했습니다.</p></div><div class="engineering-focus"><span>DESIGN FOCUS</span><p>'+html(d.focus)+'</p></div>'+specs+'<div class="engineering-subhead"><span>IMPLEMENTATION</span><h3>주요 구현 내용</h3></div><div class="engineering-modules">'+implementations+'</div>'+debugs+checks+(d.scope?'<p class="engineering-scope"><strong>검증 범위 / 한계</strong> '+html(d.scope)+'</p>':'')+(links?'<div class="evidence-links">'+links+'</div>':'')+'</div></section>';
+    const deep=$('#deep-content');
+    const deepSection=deep?.closest('section');
+    if(deepSection)deepSection.insertAdjacentHTML('afterend',content);
+    if(d.github){
+      const heroGithub=document.querySelector('.project-actions a[href="'+html(window.PORTFOLIO.github)+'"]');
+      if(heroGithub){heroGithub.href=d.github;heroGithub.textContent='⌘ 관련 GitHub 코드';}
+    }
+  }
+
   function setupProjectDetail(){
     if(document.body.dataset.page !== 'project') return;
     const slug = new URLSearchParams(window.location.search).get('slug') || 'can-adas';
@@ -109,6 +129,7 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     $('#verification-list').innerHTML=(p.verification||[]).map(v=>`<li>${html(v)}</li>`).join('');
     const results = p.results || [{value:'RTL',label:'직접 구현',detail:p.role.split('·')[0].trim()},{value:'FPGA',label:'데이터 경로',detail:p.architecture?.slice(0,2).join(' → ')||'설계'},{value:'검증',label:'구현 결과 확인',detail:'상세 내용은 좌측 참조'}];
     $('#project-results').innerHTML=results.map(item=>`<div><strong>${html(item.value)}</strong><span>${html(item.label)}</span><small>${html(item.detail)}</small></div>`).join('');
+    renderEngineeringDetails(p);
     $('#project-takeaway').textContent=p.takeaway;
     const next=projects[(projects.indexOf(p)+1)%projects.length];
     $('#next-project-link').href=detailLink(next);
