@@ -797,3 +797,184 @@ window.PORTFOLIO.technicalDetails = {
     "github": "https://github.com/ichanmi1009/stopwatch-watch"
   }
 };
+
+
+// 공개 저장소의 원본 RTL/Logic Analyzer/Verification 캡처를 그대로 표시합니다.
+window.PORTFOLIO.waveforms = {
+  "can-adas": {
+    "note": "CAN Hard Sync·Resync, CRC Delimiter 디버깅 파형은 Notion 원본에 있습니다. 해당 이미지의 공개 파일 주소를 확보하지 못해 임의 파형이나 합성 이미지를 대신 게시하지 않았습니다.",
+    "links": [
+      {
+        "title": "Hard Sync · Resync 파형 원본",
+        "url": "https://app.notion.com/p/5d0e099826898393a606818e23cc082b"
+      },
+      {
+        "title": "CAN RX CRC · Error 디버깅 파형 원본",
+        "url": "https://app.notion.com/p/825e0998268983fb883c815ad5eb9f46"
+      }
+    ]
+  },
+  "spi-i2c-uvm": {
+    "images": [
+      {
+        "title": "SPI Master/Slave Logic Analyzer — READ",
+        "caption": "SCLK · MOSI · MISO · SS_n 신호를 관측한 실제 SPI Read 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/spi_logic_analyzer_read.png"
+      },
+      {
+        "title": "SPI Master/Slave Logic Analyzer — WRITE",
+        "caption": "실제 FPGA 보드의 SPI Write 신호",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/spi_logic_analyzer_write.png"
+      },
+      {
+        "title": "SPI UVM Coverage",
+        "caption": "SPI UVM Functional Coverage 결과",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/spi_coverage.png"
+      },
+      {
+        "title": "SPI UVM Scoreboard",
+        "caption": "SPI TX/RX Scoreboard 검증 출력",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/spi_scoreboard.png"
+      },
+      {
+        "title": "I2C Logic Analyzer — READ",
+        "caption": "I2C Read Transaction 실제 관측 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_logic_analyzer_read.png"
+      },
+      {
+        "title": "I2C Logic Analyzer — WRITE",
+        "caption": "I2C Write Transaction 실제 관측 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_logic_analyzer_write.png"
+      },
+      {
+        "title": "I2C UVM Coverage",
+        "caption": "I2C UVM Functional Coverage 결과",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_coverage.png"
+      },
+      {
+        "title": "I2C UVM Scoreboard",
+        "caption": "I2C READ/WRITE Scoreboard 검증 출력",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_scoreboard.png"
+      }
+    ]
+  },
+  "axi-soc": {
+    "images": [
+      {
+        "title": "SPI AXI Peripheral Simulation",
+        "caption": "Custom SPI IP의 AXI4-Lite 인터페이스 동작 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/spi_axi_simulation.png"
+      },
+      {
+        "title": "SPI Read Logic Analyzer",
+        "caption": "Slave RAM 주소와 수신 데이터 검증에 사용한 실제 SPI Read 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/spi_read_logic_analyzer.png"
+      },
+      {
+        "title": "SPI Write Logic Analyzer",
+        "caption": "Master–Slave SPI Write 검증 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/spi_write_logic_analyzer.png"
+      },
+      {
+        "title": "GPIO UVM Verification",
+        "caption": "GPIO UVM 기반 Register·I/O 검증 자료",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/gpio_uvm_verification.png"
+      }
+    ]
+  },
+  "rv32i-cpu": {
+    "images": [
+      {
+        "title": "R-Type Instruction Simulation",
+        "caption": "RV32I R-Type Data Path 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/r_type_simulation.png"
+      },
+      {
+        "title": "Store Instruction Simulation",
+        "caption": "Store 명령어와 Write Data / Address 동작 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/store_simulation.png"
+      },
+      {
+        "title": "JALR Instruction Simulation",
+        "caption": "JALR 제어 흐름 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/jalr_simulation.png"
+      }
+    ]
+  },
+  "uart-fifo-uvm": {
+    "images": [
+      {
+        "title": "UART RX 파형",
+        "caption": "UART RX 데이터 비트 수신 및 완료 시점",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/uart-rx-waveform.png"
+      },
+      {
+        "title": "UART TX 파형",
+        "caption": "UART TX 시작·데이터·종료 동작",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/uart-tx-waveform.png"
+      },
+      {
+        "title": "UART RX FIFO",
+        "caption": "UART 수신 데이터의 FIFO 연결 과정",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/uart-rx-fifo-waveform.png"
+      },
+      {
+        "title": "Class-based Loopback 검증",
+        "caption": "Loopback 동작 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/loopback-waveform.png"
+      }
+    ]
+  },
+  "uart-loopback": {
+    "images": [
+      {
+        "title": "UART Loopback Simulation",
+        "caption": "PC–FPGA UART Loopback의 실제 RTL 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/loopback-simulation.png"
+      },
+      {
+        "title": "UART RX Synchronizer",
+        "caption": "비동기 RX 신호 2-FF Synchronizer 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/rx-synchronizer-simulation.png"
+      },
+      {
+        "title": "UART TX Data Timing",
+        "caption": "TX 데이터 전송 타이밍 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/tx-data-simulation.png"
+      },
+      {
+        "title": "UART RX Done",
+        "caption": "RX 완료 신호 동작",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/rx-done-simulation.png"
+      }
+    ]
+  },
+  "uart-fifo-sensor": {
+    "images": [
+      {
+        "title": "DHT11 Sensor RTL Simulation",
+        "caption": "온습도 센서 입력 상태와 데이터 해석 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch/main/assets/dht11_simulation.png"
+      }
+    ]
+  },
+  "fpga-stopwatch": {
+    "images": [
+      {
+        "title": "Stopwatch RTL Simulation",
+        "caption": "스톱워치 FSM·Counter 동작 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/stopwatch-simulation.png"
+      },
+      {
+        "title": "Watch RTL Simulation",
+        "caption": "시계 Counter·표시 동작 시뮬레이션",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/watch-simulation.png"
+      },
+      {
+        "title": "AM/PM Switching Simulation",
+        "caption": "오전/오후 전환 상태 검증",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/am-pm-simulation.png"
+      }
+    ]
+  }
+};
