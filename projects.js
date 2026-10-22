@@ -99,7 +99,7 @@ window.PORTFOLIO = {
       role:'Inference Pipeline · Tracking · Web UI',tags:['Jetson Orin Nano','YOLO11','MiVOLO','Web UI'],
       highlights:['YOLO11 / MiVOLO 추론 구성', 'Jetson On-Device 실행 환경', '결과 확인용 Web UI 연동'],
       context:'Edge Device에서 영상 추론 결과를 시각화하는 온디바이스 AI 프로젝트입니다.',
-      steps:[{heading:'실행 환경',text:'Jetson Orin Nano의 추론 환경을 구성했습니다.'},{heading:'추론 흐름',text:'Detection 및 Tracking 결과를 연결했습니다.'},{heading:'가시화',text:'Web UI에서 추론 결과를 확인하도록 구성했습니다.'}],
+      steps:[{"heading":"Jetson Orin Nano 실행 환경","text":"Jetson Orin Nano에서 YOLO11·MiVOLO 추론을 실행하도록 영상 입력과 모델 실행 환경을 구성했습니다."},{"heading":"Detection · Tracking 흐름","text":"객체 검출 결과를 Tracking 정보 및 후속 분석 결과와 연결하는 처리 경로를 구성했습니다."},{"heading":"Web UI 결과 확인","text":"영상과 인식·추적 결과를 Web UI에 표시했습니다. 측정하지 않은 FPS·정확도는 수치화하지 않았습니다."}],
       verification:['Jetson 환경에서 추론 파이프라인 실행', 'Web UI 결과 표시 확인'],
       takeaway:'모델 출력이 사용 가능한 시스템 정보가 되려면 전처리와 후처리, UI 경로를 함께 고려해야 합니다.',architecture:['Camera / Video','YOLO11','Tracking','MiVOLO','Web UI']
     },
@@ -109,7 +109,7 @@ window.PORTFOLIO = {
       role:'STM32 Register / HAL · Key Matrix · PIR',tags:['STM32','CMSIS','HAL','Bare-metal'],
       highlights:['CMSIS Register / HAL 구현', 'Key Matrix 스캔 처리', 'PIR 센서 입력 확인'],
       context:'MCU 주변장치를 Register 단위와 HAL 두 방식으로 다뤄보며 제어 계층의 차이를 익힌 프로젝트입니다.',
-      steps:[{heading:'GPIO 설정',text:'핀 모드와 입력·출력 동작을 구성했습니다.'},{heading:'스캔 로직',text:'Key Matrix 스캔으로 키 상태를 읽었습니다.'},{heading:'센서 처리',text:'PIR 신호를 읽고 이벤트를 처리했습니다.'}],
+      steps:[{"heading":"CMSIS Register · HAL 비교","text":"GPIO Direction/Pull/Input 설정을 Register 접근과 HAL API로 비교하며 STM32 주변장치 초기화 경로를 구성했습니다."},{"heading":"Key Matrix Row/Column Scan","text":"행·열 GPIO의 출력과 입력을 순차 확인해 눌린 Key를 판정했습니다."},{"heading":"PIR Sensor Event","text":"PIR Sensor 입력의 변화를 감지 Event로 전달하고 Key Scan과 별도로 처리했습니다."}],
       verification:['키 입력 스캔 동작', 'PIR 센서 이벤트 처리'],
       takeaway:'상위 API뿐 아니라 내부 Register 설정을 이해해야 주변장치 동작을 추적하기 쉽습니다.',architecture:['GPIO Input','CMSIS / HAL','Key Scan','PIR Input','Application']
     },
@@ -119,7 +119,7 @@ window.PORTFOLIO = {
       role:'Single-Cycle CPU · Datapath · Control Unit',tags:['SystemVerilog','RISC-V','Basys3','CPU'],
       highlights:['RV32I 37개 명령 디코딩', 'Datapath / Control Unit 설계', 'Basys3 타깃 RTL 구현'],
       context:'RV32I Instruction 처리 경로를 설계하며 CPU 내부의 Control과 Datapath 상호작용을 확인했습니다.',
-      steps:[{heading:'명령어 분류',text:'Opcode와 명령어 형식에 따라 Control Signal을 정의했습니다.'},{heading:'Datapath 구성',text:'Register File, ALU 및 PC 경로를 설계했습니다.'},{heading:'제어부 연결',text:'Decoder 결과를 각 연산 경로와 연결했습니다.'}],
+      steps:[{"heading":"RV32I 37명령 Decoder","text":"Opcode와 Instruction Format을 기준으로 ALU Control, Register Write, Branch/Jump 선택 신호를 생성했습니다."},{"heading":"Single-Cycle Datapath","text":"PC → Instruction → Register File → ALU → Memory/Writeback 경로를 구성하고 PC Update MUX를 연결했습니다."},{"heading":"R-Type · Store · JALR 검증","text":"Instruction별 시뮬레이션 파형에서 ALU, Memory Write, PC 업데이트가 의도대로 동작하는지 확인했습니다."}],
       verification:['RV32I 37개 명령어 지원 범위 점검', 'Single-Cycle 데이터 흐름 분석'],
       takeaway:'명령어 한 개의 처리도 여러 하위 블록의 정확한 조합으로 완성된다는 점을 배웠습니다.',architecture:['Instruction','Decoder','Register File','ALU','Writeback']
     },
@@ -129,7 +129,7 @@ window.PORTFOLIO = {
       role:'Generator · Driver · Monitor · Scoreboard',tags:['SystemVerilog','OOP','UART','FIFO'],
       highlights:['Generator / Driver / Monitor / Scoreboard 구성', 'UART·FIFO 시나리오 검증', 'Class 기반 검증 환경 분리'],
       context:'UART/FIFO 기능을 모듈별 관측과 비교로 검증하는 Testbench 설계 프로젝트입니다.',
-      steps:[{heading:'Transaction 정의',text:'입출력 데이터와 제어 항목을 Transaction으로 구성했습니다.'},{heading:'Driver / Monitor',text:'입력 자극과 DUT 출력을 분리해 수집했습니다.'},{heading:'Scoreboard',text:'기대 출력과 관측 결과를 비교했습니다.'}],
+      steps:[{"heading":"Class 기반 Transaction/Generator","text":"SystemVerilog Class로 전송 데이터와 제어 조건을 정의하고 Generator가 검증 자극을 생성하도록 구성했습니다."},{"heading":"Driver → DUT → Monitor","text":"Driver가 입력을 구동하고 Monitor가 UART RX/TX 및 FIFO 실제 동작을 관찰하도록 역할을 분리했습니다."},{"heading":"Scoreboard와 파형 검증","text":"예상 데이터와 관측 결과를 비교하고 UART/FIFO/Loopback 파형으로 검증 지점을 확인했습니다."}],
       verification:['UART/FIFO 기능 시나리오 검증', 'Class 기반 Testbench 모듈 간 동작 확인'],
       takeaway:'검증 코드도 역할을 분리하면 수정과 재사용이 쉬워집니다.',architecture:['Generator','Driver','UART / FIFO','Monitor','Scoreboard']
     },
@@ -139,7 +139,7 @@ window.PORTFOLIO = {
       role:'Sensor Interface · UART / FIFO · PC Link',tags:['SystemVerilog','UART','FIFO','Basys3'],
       highlights:['DHT11 / HC-SR04 센서 인터페이스', 'UART·FIFO 데이터 경로', 'PC–FPGA 통신 확인'],
       context:'센서 입력부터 FIFO 저장과 UART 송신까지 연속된 FPGA 데이터 경로를 다룬 프로젝트입니다.',
-      steps:[{heading:'센서 수집',text:'온습도·거리 센서의 입력을 처리했습니다.'},{heading:'버퍼링',text:'FIFO로 데이터 흐름을 완충했습니다.'},{heading:'PC 송신',text:'UART로 수집 값을 전달했습니다.'}],
+      steps:[{"heading":"DHT11 · HC-SR04 Sensor Interface","text":"온습도와 거리 센서의 서로 다른 입력 Timing을 FPGA에서 처리하도록 인터페이스를 구성했습니다."},{"heading":"FIFO Buffer","text":"측정값을 FIFO에 저장해 센서 데이터 생성 주기와 UART 전송 속도 차이를 완충했습니다."},{"heading":"UART → PC Terminal","text":"FIFO에서 읽은 센서 값을 UART로 전송하고 PC Terminal에서 수신 결과를 확인했습니다."}],
       verification:['센서 데이터 전송 경로 확인', 'PC Terminal 수신 확인'],
       takeaway:'서로 다른 속도의 블록은 버퍼를 통해 데이터 흐름을 안정적으로 연결할 수 있습니다.',architecture:['DHT11 / HC-SR04','Sensor Interface','FIFO','UART TX','PC']
     },
@@ -149,7 +149,7 @@ window.PORTFOLIO = {
       role:'UART RX / TX RTL · Sampling · Loopback',tags:['SystemVerilog','UART','Basys3','9600 bps'],
       highlights:['RX·TX 16배 Oversampling', '9600 bps / 8N1 Frame 처리', 'PC–FPGA Hardware Loopback'],
       context:'UART의 Start, Data, Stop Bit 처리와 Clock 기준 Sampling을 직접 구현한 기초 RTL 프로젝트입니다.',
-      steps:[{heading:'Baud Timing',text:'Clock을 분주해 9600 bps 수신·송신 기준을 만들었습니다.'},{heading:'RX Sampling',text:'16배 Oversampling으로 수신 Data Bit를 판정했습니다.'},{heading:'Loopback',text:'수신 데이터를 다시 송신하도록 연결했습니다.'}],
+      steps:[{"heading":"9600 bps · 8N1 Frame","text":"Start 1bit, Data 8bit, Stop 1bit 형태의 UART TX/RX FSM과 Baud Timing을 구현했습니다."},{"heading":"2-FF Sync / 16× Oversampling","text":"비동기 RX를 동기화한 후 Data Bit 중앙에서 Sampling하여 수신 Byte를 복원했습니다."},{"heading":"PC–FPGA Loopback","text":"수신 Byte를 다시 UART TX로 송신하고 실물 보드 및 시뮬레이션 파형에서 일치 여부를 확인했습니다."}],
       verification:['9600 bps 8N1 UART Frame 확인', 'PC–FPGA Hardware Loopback 검증'],
       takeaway:'샘플링 시점을 정확히 정의하는 것이 Serial 통신 구현의 출발점임을 확인했습니다.',architecture:['PC UART','FPGA RX','FIFO / Data','FPGA TX','PC UART']
     },
@@ -159,7 +159,7 @@ window.PORTFOLIO = {
       role:'Counter · FSM · 7-Segment Display',tags:['SystemVerilog','FSM','7-Segment','Basys3'],
       highlights:['Counter / FSM 설계', '7-Segment 표시 제어', 'Stopwatch / Watch 모드 전환'],
       context:'FPGA의 기본 순차회로와 상태 전이를 실제 보드 Display에 연결한 프로젝트입니다.',
-      steps:[{heading:'Clock / Counter',text:'시간 기준 Counter를 구성했습니다.'},{heading:'FSM',text:'시계와 스톱워치 모드 상태를 정의했습니다.'},{heading:'Display',text:'7-Segment에 현재 상태와 값을 표시했습니다.'}],
+      steps:[{"heading":"시간 Tick / Counter","text":"FPGA Clock으로 시간 갱신 Tick을 만들고 자리올림 Counter를 구성했습니다."},{"heading":"Watch · Stopwatch FSM","text":"모드 및 버튼 이벤트에 따른 시간 증가·정지·전환 상태를 구현했습니다."},{"heading":"7-Segment 출력 / 검증","text":"7-Segment Scan에 시간 데이터를 연결하고 Stopwatch, Watch, AM/PM 전환 시뮬레이션을 확인했습니다."}],
       verification:['Stopwatch 동작 확인', '모드 전환과 표시 동작 확인'],
       takeaway:'간단한 UI도 시간 기준과 상태 전이를 분명히 정의해야 예측 가능하게 동작합니다.',architecture:['Clock','Counter','FSM','7-Segment','Display']
     }
