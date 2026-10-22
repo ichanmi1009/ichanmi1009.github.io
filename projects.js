@@ -1507,6 +1507,16 @@ window.PORTFOLIO.waveforms = {
         "title": "I2C UVM Scoreboard",
         "caption": "I2C READ/WRITE Scoreboard 검증 출력",
         "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_scoreboard.png"
+      },
+      {
+        "title": "SPI FPGA 실보드",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/spi_fpga.png",
+        "caption": "실제 Master/Slave 통신 구성"
+      },
+      {
+        "title": "I2C FPGA 실보드",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UVM_SPI_I2C_Verification/main/docs/images/i2c_fpga.png",
+        "caption": "실제 I2C 통신 구성"
       }
     ]
   },
@@ -1531,6 +1541,21 @@ window.PORTFOLIO.waveforms = {
         "title": "GPIO UVM Verification",
         "caption": "GPIO UVM 기반 Register·I/O 검증 자료",
         "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/gpio_uvm_verification.png"
+      },
+      {
+        "title": "SoC 설계 구조",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/soc_architecture.png",
+        "caption": "MicroBlaze AXI4-Lite Peripheral 연결"
+      },
+      {
+        "title": "실제 FPGA 테스트",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/hardware_demo.jpg",
+        "caption": "Basys 3 실물 검증"
+      },
+      {
+        "title": "SPI 보드 연결",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/board_connection.png",
+        "caption": "Basys 3 두 대의 연결"
       }
     ]
   },
@@ -1550,6 +1575,21 @@ window.PORTFOLIO.waveforms = {
         "title": "JALR Instruction Simulation",
         "caption": "JALR 제어 흐름 시뮬레이션",
         "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/jalr_simulation.png"
+      },
+      {
+        "title": "CPU Datapath",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/architecture.png",
+        "caption": "실제 RV32I 회로 구조"
+      },
+      {
+        "title": "CPU 완료 결과",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/completion_value.png",
+        "caption": "통합 실행 완료값 확인"
+      },
+      {
+        "title": "CPU 반복 검증",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/RV32I_singlecycle/main/docs/images/loop_count.png",
+        "caption": "C 1~10 누적합 실행"
       }
     ]
   },
@@ -1574,6 +1614,26 @@ window.PORTFOLIO.waveforms = {
         "title": "Class-based Loopback 검증",
         "caption": "Loopback 동작 시뮬레이션",
         "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/loopback-waveform.png"
+      },
+      {
+        "title": "FIFO Random 파형",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/fifo-random-waveform.png",
+        "caption": "Push/Pop·Pointer 검증"
+      },
+      {
+        "title": "UART Busy 수정 전",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/tx-busy-before.png",
+        "caption": "전송 중첩 원인 확인"
+      },
+      {
+        "title": "UART Busy 수정 후",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/tx-busy-after.png",
+        "caption": "Driver Busy 대기 적용"
+      },
+      {
+        "title": "Loopback Scoreboard",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/SystemVerilog_Verification/main/assets/loopback-scoreboard.png",
+        "caption": "자동 비교 결과"
       }
     ]
   },
@@ -1598,6 +1658,16 @@ window.PORTFOLIO.waveforms = {
         "title": "UART RX Done",
         "caption": "RX 완료 신호 동작",
         "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/rx-done-simulation.png"
+      },
+      {
+        "title": "UART 실험 설정",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/uart-config.png",
+        "caption": "9600bps 8N1"
+      },
+      {
+        "title": "UART Loopback 구조",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART_LOOPBACK/main/assets/system-architecture.png",
+        "caption": "RX/TX 연결"
       }
     ]
   },
@@ -1607,6 +1677,21 @@ window.PORTFOLIO.waveforms = {
         "title": "DHT11 Sensor RTL Simulation",
         "caption": "온습도 센서 입력 상태와 데이터 해석 시뮬레이션",
         "src": "https://raw.githubusercontent.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch/main/assets/dht11_simulation.png"
+      },
+      {
+        "title": "DHT11 FSM",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch/main/assets/dht11_fsm.png",
+        "caption": "40bit 수신 구조"
+      },
+      {
+        "title": "FND Controller",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch/main/assets/fnd_controller.png",
+        "caption": "Mode/Display 경로"
+      },
+      {
+        "title": "DHT11 실제 출력",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch/main/assets/dht11_terminal.jpg",
+        "caption": "FPGA·PC Terminal 결과"
       }
     ]
   },
@@ -1626,6 +1711,16 @@ window.PORTFOLIO.waveforms = {
         "title": "AM/PM Switching Simulation",
         "caption": "오전/오후 전환 상태 검증",
         "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/am-pm-simulation.png"
+      },
+      {
+        "title": "Watch FPGA 실보드",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/hardware-result.jpg",
+        "caption": "Basys 3 FND 결과"
+      },
+      {
+        "title": "Watch 제어 구조",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/stopwatch-watch/main/assets/system-architecture.png",
+        "caption": "Control/Datapath 연결"
       }
     ]
   },
@@ -1640,6 +1735,11 @@ window.PORTFOLIO.waveforms = {
         "title": "4×4 Key Matrix Layout",
         "src": "https://raw.githubusercontent.com/ichanmi1009/STM32-SmartDoorLock/main/docs/images/keypad_layout.png",
         "caption": "Row/Column Scanning과 Key 배열에 사용한 구성도"
+      },
+      {
+        "title": "CMSIS 도어락 구조",
+        "src": "https://raw.githubusercontent.com/ichanmi1009/STM32-SmartDoorLock/main/docs/images/system_architecture.png",
+        "caption": "PIR·Keypad·Servo·LCD"
       }
     ]
   }
