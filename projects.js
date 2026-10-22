@@ -49,13 +49,13 @@ window.PORTFOLIO = {
     {
       slug: 'fpga-adas-isp', title: 'FPGA 기반 ADAS ISP SoC', category: 'FPGA · ISP SoC', filter: 'vehicle',
       period: '2026.08 — 2026.09', featured: true,
-      summary: '카메라 영상에 Red Detection ISP를 구현하고 AXI4-Lite 주변장치와 연결해 영상 처리 데이터를 시스템에서 활용했습니다.',
+      summary: 'OV7670 영상의 적색 객체를 1-bit Binary·Gaussian·ROI·Decoder로 판별하고, AXI4-Lite UART IP를 통해 0xFF STOP 명령을 전달했습니다.',
       role: 'Red Detect ISP · ROI / Red Decoder · Gaussian Blur',
       tags: ['SystemVerilog', 'FPGA', 'ISP', 'AXI4-Lite', 'OV7670'],
       highlights: ['Red Detection 1-bit Binary 데이터 처리', 'ROI·Red Decoder 영상 경로 구성', '카메라–ISP–SoC 데이터 경로 연동'],
       context: 'FPGA에서 카메라 입력을 처리하고 결과를 SoC 주변장치와 연결하는 ADAS ISP 프로젝트입니다. 담당 기능은 Red Detect ISP와 ROI, Red Decoder 및 Gaussian Blur 구현입니다.',
-      steps: [{heading:'영상 입력 정리',text:'카메라 데이터의 유효 신호와 Pixel 흐름을 분석했습니다.'},{heading:'영상 필터링',text:'색상 기반 검출과 Gaussian Blur를 구성했습니다.'},{heading:'검출 결과 연결',text:'ROI·Red Decoder 결과를 시스템에서 활용할 수 있도록 경로를 정리했습니다.'}],
-      verification: ['영상 입력–필터–출력 데이터 경로 점검', 'FPGA에서 Red Detection 동작 확인'],
+      steps: [{heading:'RGB565 → 1-bit Red Filter',text:'R≥18, G≤24, B≤12 조건으로 적색 Pixel을 Binary로 추출하고 Frame Buffer에 저장했습니다.'},{heading:'Gaussian · ROI · Red Decoder',text:'3×3 Noise Filtering 후 Bounding Box 최소·최대 좌표를 계산하고 크기 10px 이상·중심 위치 조건으로 객체를 판별했습니다.'},{heading:'WAIT_UNRED + UART STOP',text:'검출 시 0xFF STOP을 전송하고 WAIT_UNRED State로 정지 반복·재출발 문제를 개선했습니다. Control 보드의 MicroBlaze로 UART 결과를 전달했습니다.'}],
+      verification: ['Red 객체 ROI 중심 조건 및 0xFF STOP 출력 확인', 'Red Detect → UART → MicroBlaze → Step Motor 정지 경로 팀 단위 통합 검증', 'OV7670 입력 Noise가 Sobel Edge에 미치는 영향 점검 및 보완'],
       takeaway:'Pixel 유효 구간과 모듈 간 지연을 함께 관리해야 영상 처리 결과의 정렬을 유지할 수 있음을 확인했습니다.',
       architecture:['OV7670', 'Pixel Capture', 'ISP / ROI', 'AXI4-Lite', 'Output']
     },
@@ -67,8 +67,8 @@ window.PORTFOLIO = {
       tags:['SystemVerilog','UVM 1.2','SPI','I2C','VCS'],
       highlights:['SPI Master/Slave Transaction 검증', 'I2C Slave READ / WRITE 확인', '정의한 Functional Coverage 100% 달성'],
       context:'Serial Protocol Master/Slave의 기능을 구현하고 UVM 기반 재사용 가능한 테스트벤치로 정상 동작을 확인했습니다.',
-      steps:[{heading:'RTL 설계',text:'SPI·I2C의 Clock/데이터 전송 순서를 FSM과 Shift Register로 구성했습니다.'},{heading:'검증 환경 구성',text:'Sequence, Driver, Monitor, Scoreboard를 통해 예상값과 관측값을 비교했습니다.'},{heading:'커버리지 점검',text:'READ / WRITE 및 프로토콜 시나리오별 Functional Coverage를 확인했습니다.'}],
-      verification:['SPI 검증 PASS / FAIL 866 / 0 사례', 'I2C Slave WRITE / READ PASS', '정의된 Functional Coverage 100%'],
+      steps:[{heading:'SPI/I2C Master·Slave RTL',text:'SPI Mode 0은 상승 Edge Sample / 하강 Edge Update로 구분하고, I2C는 START·주소·ACK·READ/WRITE·STOP FSM을 구성했습니다.'},{heading:'UVM Scoreboard 자동 비교',text:'Sequence–Driver–Monitor–Scoreboard 경로를 구성하고 SPI MOSI/MISO 양방향, I2C Read/Write 수신 데이터를 기대값과 비교했습니다.'},{heading:'Coverage + 실보드 검증',text:'SPI Fast/Normal/Slow 866건, I2C WRITE/READ 1,564건 FAIL 0을 확인하고 Basys 3 Logic Analyzer 파형과 Functional Coverage를 대조했습니다.'}],
+      verification:['SPI Master→Slave·Slave→Master 각각 866건 PASS / FAIL 0', 'I2C WRITE 782건 + READ 782건 = 총 1,564건 PASS / FAIL 0', '정의한 SPI·I2C Functional Coverage 100%; Logic Analyzer READ/WRITE 파형 첨부'],
       takeaway:'PASS 여부뿐 아니라 어떤 조건과 전이를 검증했는지 함께 정의하는 것이 검증 품질을 결정한다는 점을 확인했습니다.',
       architecture:['RTL DUT','UVM Driver','Monitor','Scoreboard','Coverage']
     },
@@ -79,18 +79,18 @@ window.PORTFOLIO = {
       role:'Camera Pixel Capture · BRAM · VGA Timing',tags:['SystemVerilog','Zynq-7000','BRAM','VGA','SCCB'],
       highlights:['PCLK / HREF / VSYNC 기반 Pixel Capture', 'Dual-Port BRAM ↔ VGA 영상 출력', 'BRAM Read Latency 고려'],
       context:'OV7670 카메라 입력을 FPGA 메모리에 저장하고 VGA 동기 신호에 맞춰 화면에 출력하는 프로젝트입니다.',
-      steps:[{heading:'카메라 입력',text:'PCLK·HREF·VSYNC를 이용해 유효 픽셀을 수집했습니다.'},{heading:'영상 저장',text:'픽셀을 BRAM 주소에 대응시켜 저장했습니다.'},{heading:'VGA 출력',text:'BRAM Read Latency와 VGA 동기 신호를 고려해 출력 순서를 맞췄습니다.'}],
-      verification:['QVGA 320 × 240 데이터 경로 실험', 'RGB444 / RGB565 및 테스트 패턴 검토'],
+      steps:[{heading:'PCLK/HREF/VSYNC Pixel Capture',text:'OV7670의 8-bit 데이터 2Byte를 조합해 Pixel을 생성하고 PCLK Write Domain에서 유효 Frame 데이터를 저장했습니다.'},{heading:'Dual-Port BRAM 주소 변환',text:'320×240 Buffer를 VGA 640×480에 출력하기 위해 Read Address를 ((y>>1)×320)+(x>>1)로 산출했습니다.'},{heading:'VGA 1-Clock Latency 정렬',text:'BRAM Read Data가 1Clock 뒤에 출력되므로 DE·HSYNC·VSYNC를 같은 주기만큼 지연해 화면 데이터와 맞췄습니다.'}],
+      verification:['BRAM test.mem 패턴으로 VGA 출력 경로 독립 검증', 'ILA Sampling Clock을 PCLK으로 변경해 Capture Write Enable 관찰', 'AXI4-Lite SCCB 제어와 Camera 초기화/영상 출력 경로 점검'],
       takeaway:'영상 파이프라인에서는 데이터 자체뿐 아니라 valid와 주소의 시점까지 정렬해야 합니다.',architecture:['OV7670','Pixel Capture','BRAM','VGA Timing','Display']
     },
     {
       slug:'axi-soc',title:'AXI4-Lite SoC Peripheral 통합',category:'RTL · SoC',filter:'soc',filters:['soc','rtl'],period:'2026.06.21 — 2026.06.30',
-      summary:'GPIO·Timer·UART·SPI 주변장치를 AXI4-Lite Register Map으로 통합하고 C Firmware와 연결했습니다.',
+      summary:'MicroBlaze SoC에 Custom AXI4-Lite SPI IP와 GPIO·Timer·UART를 통합하고, SPI RAM Read 시 주소가 변하는 버그를 RTL에서 해결했습니다.',
       role:'AXI4-Lite IP · Register Map · Bare-metal C',tags:['AXI4-Lite','MicroBlaze','C','Vivado','Vitis'],
       highlights:['AXI4-Lite Register Map 구성', 'Custom Peripheral IP 통합', 'MicroBlaze App–Driver–HAL 연동'],
       context:'Processor가 주변장치를 Register로 제어할 수 있도록 AXI4-Lite 인터페이스와 Bare-metal Firmware를 연결한 SoC 프로젝트입니다.',
-      steps:[{heading:'Address Map 설계',text:'Control/Status Register의 주소와 접근 동작을 정의했습니다.'},{heading:'IP Integration',text:'GPIO·Timer·UART·SPI 주변장치를 SoC Bus에 연결했습니다.'},{heading:'SW 연동',text:'Vitis에서 Driver와 Application을 통해 Register를 제어했습니다.'}],
-      verification:['Register Read / Write 기능 점검', 'Peripheral Loopback 동작 확인'],
+      steps:[{heading:'AXI4-Lite / Register Map',text:'MicroBlaze에 GPIO·Timer·UART·SPI IP를 연결하고 SPI SR(0x00), TDR(0x04), RDR(0x08), CR(0x0C)을 정의했습니다.'},{heading:'SPI Master RTL / Vitis',text:'C Application이 Command–Address–Data를 구성하고 SPI Master는 Mode 0에서 SCLK/MOSI/MISO/SS_n 전송 Timing을 처리하도록 분리했습니다.'},{heading:'Slave RAM Read 주소 래치 오류',text:'ram[read_data]가 Dummy Byte에 따라 0번지를 가리키던 원인을 찾아 ram[addr]로 수정하고 Logic Analyzer로 0x00~0x03 Read/Write 일치를 확인했습니다.'}],
+      verification:['Basys 3 두 대의 SPI Master/Slave 통신 및 RAM 0x00~0x03 Read/Write 데이터 일치', 'Logic Analyzer의 SCLK/MOSI/MISO/SS_n 파형과 Vitis Terminal 출력 확인', 'GPIO UVM: 정의한 Address/Direction/WSTRB/Cross Coverage 100%'],
       takeaway:'SoC 동작은 RTL 인터페이스와 SW Register 규약이 일치해야 완성된다는 점을 확인했습니다.',architecture:['MicroBlaze','AXI4-Lite','Register Map','Peripheral','Firmware']
     },
     {
