@@ -149,7 +149,7 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
       $('#deep-intro').textContent='프로젝트의 데이터 경로와 주요 구현 기능을 중심으로 정리했습니다.';
     }
     $('#verification-list').innerHTML=(p.verification||[]).map(v=>`<li>${html(v)}</li>`).join('');
-    const results = p.results || [{value:'RTL',label:'직접 구현',detail:p.role.split('·')[0].trim()},{value:'FPGA',label:'데이터 경로',detail:p.architecture?.slice(0,2).join(' → ')||'설계'},{value:'검증',label:'구현 결과 확인',detail:'상세 내용은 좌측 참조'}];
+    const results = p.results || window.PORTFOLIO?.technicalDetails?.[p.slug]?.metrics || [{value:'구현',label:'주요 기능',detail:p.highlights?.[0]||''}];
     $('#project-results').innerHTML=results.map(item=>`<div><strong>${html(item.value)}</strong><span>${html(item.label)}</span><small>${html(item.detail)}</small></div>`).join('');
     renderEngineeringDetails(p);
     renderWaveformGallery(p);
