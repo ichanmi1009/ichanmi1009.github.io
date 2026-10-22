@@ -877,147 +877,388 @@ window.PORTFOLIO.technicalDetails = {
     "github": "https://github.com/ichanmi1009/RV32I_singlecycle"
   },
   "uart-fifo-uvm": {
-    "focus": "Class 기반 Testbench에서 자극 생성·구동·관측·기대값 비교의 책임을 분리했습니다.",
+    "focus": "SystemVerilog Class·Mailbox·Event로 UART와 FIFO의 자동검증 환경을 구성했습니다. DUT 전송 완료와 Testbench 다음 자극 시점을 분리하고, FIFO 데이터 순서를 Scoreboard Queue로 비교했습니다.",
+    "spec": [
+      [
+        "검증 프레임워크",
+        "SystemVerilog Class-based",
+        "UVM Framework와 구분"
+      ],
+      [
+        "Testbench",
+        "Transaction / Generator / Driver / Monitor / Scoreboard",
+        "Mailbox + Event"
+      ],
+      [
+        "UART",
+        "RX Random 500 PASS / TX Random 500 PASS",
+        "FAIL 0"
+      ],
+      [
+        "FIFO",
+        "Random Push/Pop 500 Trial → Pop 344 비교 PASS",
+        "16Byte FIFO Full/Pop"
+      ],
+      [
+        "Loopback",
+        "UART RX→FIFO→UART TX 500 PASS",
+        "Byte Sequence/Boundary"
+      ]
+    ],
     "implementation": [
       {
-        "title": "Testbench Data Flow",
+        "title": "Transaction · Generator · Driver",
         "items": [
-          "Generator가 Transaction을 생성하고 Driver가 UART/FIFO 입력 자극으로 변환합니다.",
-          "Monitor는 실제 DUT 입출력을 관찰하고 Scoreboard로 전달해 기대 결과와 비교합니다."
+          "Class Transaction으로 Random Byte와 제어 값을 관리하고 Mailbox로 Driver·Scoreboard에 입력 조건을 전달했습니다.",
+          "UART RX는 Random Byte를 8N1 Serial Frame으로 구동하고, UART TX는 Parallel Data와 tx_start를 인가했습니다.",
+          "Monitor의 Event가 한 Transaction 종료를 알린 뒤 다음 입력을 발생시켜 테스트 시점 중첩을 방지했습니다."
         ]
       },
       {
-        "title": "검증 항목",
+        "title": "UART/FIFO Monitor · Scoreboard",
         "items": [
-          "FIFO Push/Pop과 UART 송수신 데이터 경로를 단계별로 점검했습니다.",
-          "구체적인 Coverage 100%를 측정한 프로젝트와 혼동하지 않고 Class 기반 검증 결과로 구분했습니다."
+          "RX의 rx_done 이후 복원 Data와 TX Serial을 Monitor가 복원한 Byte를 기준으로 Expected/Actual을 비교했습니다.",
+          "FIFO Push Data를 Scoreboard Queue에 저장하고 Pop에서 선두 Data와 실제 pop_data를 비교했습니다.",
+          "FIFO Random 500개 Transaction 중 실제 Pop이 발생한 344개만 비교 PASS로 산정했습니다."
         ]
+      },
+      {
+        "title": "Unit → Integration Regression",
+        "items": [
+          "UART RX/TX 각 500 Test, FIFO Random, RX+FIFO 16Byte Full/Pop, UART+FIFO End-to-End Loopback을 검증했습니다.",
+          "0x00·0x55·0xAA·0xFF Boundary Pattern과 순차 1~16 Test를 추가했습니다.",
+          "실제 UART/FIFO/Loopback 파형과 Scoreboard 출력은 연결된 프로젝트 GitHub에서 확대 확인할 수 있습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "두 번째 UART TX Test부터 멈춤",
+        "cause": "tx_busy가 아직 Active일 때 다음 tx_start가 구동돼 DUT가 요청을 무시했고 Monitor는 전송 완료를 무한 대기했습니다.",
+        "action": "Driver에서 tx_busy 해제를 확인한 후에만 다음 tx_start를 발생시키도록 수정했습니다.",
+        "result": "TX Random 500개 Transaction 연속 PASS를 확인했습니다."
+      },
+      {
+        "issue": "Driver와 DUT 동일 Clock Edge Race",
+        "cause": "Driver가 DUT와 같은 Posedge에서 값을 바꿔 Simulation Scheduling 순서에 따라 값 관측 결과가 달라질 수 있었습니다.",
+        "action": "Driver 구동을 상승 Edge 이후로, Monitor Data Sampling을 하강 Edge로 분리했습니다.",
+        "result": "구동·관찰 타이밍을 분리해 Race 가능성을 줄였습니다."
       }
     ],
     "checks": [
       [
-        "Class Testbench",
-        "Generator / Driver / Monitor / Scoreboard 경로 구성",
-        "SystemVerilog"
+        "UART RX/TX",
+        "RX 500 PASS / TX 500 PASS",
+        "Class-based Scoreboard"
       ],
       [
-        "UART / FIFO",
-        "송수신·저장 데이터 비교",
-        "Simulation"
+        "FIFO Random",
+        "500 Trial · 344 Actual Pop Comparison PASS",
+        "Queue Data Order"
+      ],
+      [
+        "UART RX + FIFO RX",
+        "16 Byte 저장 / Full / Pop",
+        "Depth 16"
+      ],
+      [
+        "UART+FIFO Loopback",
+        "500 PASS / FAIL 0",
+        "End-to-End"
+      ],
+      [
+        "Boundary",
+        "0x00·0x55·0xAA·0xFF",
+        "Sequence Test"
       ]
     ],
-    "scope": "UVM 기반 SPI·I2C 프로젝트와 달리 이 항목은 Class-based Verification 중심입니다.",
+    "scope": "UVM 1.2를 적용한 SPI·I2C 별도 프로젝트와 다르게 SystemVerilog Class 기반 검증입니다. FIFO 344 PASS는 Random 500회 중 실제 Pop 비교가 수행된 회수입니다.",
+    "source": "https://app.notion.com/p/8a7e099826898201be420132330326a9",
     "github": "https://github.com/ichanmi1009/SystemVerilog_Verification"
   },
   "uart-fifo-sensor": {
-    "focus": "서로 다른 입력 주기를 갖는 센서 데이터를 FIFO로 완충한 뒤 UART로 PC에 출력했습니다.",
+    "focus": "3인 팀 통합 프로젝트에서 DHT11 40-bit 수신 RTL과 Mode별 FND Controller를 구현했습니다. Sensor 수신 중 Display 값이 바뀌지 않도록 Checksum·STOP·Valid·출력 Register 조건을 분리했습니다.",
+    "spec": [
+      [
+        "Platform",
+        "Basys 3 / Verilog / ComportMaster",
+        "3인 팀 프로젝트"
+      ],
+      [
+        "DHT11",
+        "Single-wire Start Low 약 19 ms",
+        "40-bit 온습도·Checksum 수신"
+      ],
+      [
+        "유효성",
+        "4Byte Sum = Checksum && FSM STOP",
+        "Valid Pulse 이후 Display Register 갱신"
+      ],
+      [
+        "FND",
+        "1 kHz 4자리 Dynamic Scan",
+        "Mode/Decimal Point MUX"
+      ],
+      [
+        "Test Data",
+        "0x21001B003C",
+        "Humidity 33 · Temperature 27 · Checksum 60"
+      ]
+    ],
     "implementation": [
       {
-        "title": "Sensor Interface",
+        "title": "DHT11 Timing FSM",
         "items": [
-          "DHT11 온습도와 HC-SR04 거리 센서의 입력 값을 FPGA에서 읽습니다.",
-          "센서의 서로 다른 데이터 생성 타이밍을 공통 Buffer 경로에 연결했습니다."
+          "IDLE→START→WAIT→SYNCL→SYNCH→DATA_SYNC→DATA_COUNT→DATA_DECISION→STOP으로 Single-wire 프로토콜을 구성했습니다.",
+          "Bit별 High Pulse Width를 System Clock Count로 측정해 0/1을 구분하고 40bit Shift Register에 누적했습니다.",
+          "앞 4Byte 합과 Checksum을 비교하고 STOP 상태에서만 valid를 발생시킵니다."
         ]
       },
       {
-        "title": "FIFO · UART",
+        "title": "DHT11 Data / Display Timing 분리",
         "items": [
-          "센서 결과를 FIFO에 적재하고 UART TX가 순서대로 PC Terminal에 전달하도록 구성했습니다.",
-          "수신 값과 실제 센서 상태가 연동되는지 PC에서 확인했습니다."
+          "초기 0==0 Checksum 통과 문제를 방지하려고 STOP 완료와 Checksum Compare를 동시에 확인했습니다.",
+          "Humidity/Temperature 출력은 수신 중 Shift Register와 직접 연결하지 않고 Valid 완료에서만 갱신합니다.",
+          "모듈 출력이 유효하지 않을 때 FND 값이 깜빡이거나 0000으로 잘못 표시되는 문제를 수정했습니다."
         ]
+      },
+      {
+        "title": "FND Controller · 팀 통합",
+        "items": [
+          "Stopwatch/Watch, DHT11 온습도, HC-SR04 거리를 각 Display 자리수로 분리했습니다.",
+          "Mode MUX, 1kHz 4자리 Scan, BCD→7-Segment Decoder 및 Decimal Point를 통합했습니다.",
+          "PC의 ASCII 명령은 팀 UART/FIFO/Decoder 경로를 거쳐 Mode를 변경하며 본인 구현 FND Controller에 연동됩니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "첫 Sensor 측정 전에 FND에 0000 표시",
+        "cause": "초기 Shift Register와 Checksum이 모두 0이라 0==0으로 간주하고 Data 수신 전 valid가 발생했습니다.",
+        "action": "Checksum Match와 FSM STOP 완료를 동시에 만족해야 Valid를 출력하도록 수정했습니다.",
+        "result": "40bit 수신 완료 전에는 온습도 출력이 갱신되지 않도록 보장했습니다."
+      },
+      {
+        "issue": "DHT11 수신 도중 FND 깜빡임",
+        "cause": "Display 출력이 Serial Shift Register에 직접 연결돼 비트 수신 중마다 표시값이 바뀌었습니다.",
+        "action": "Checksum 통과 후에만 갱신되는 온습도 Output Register를 별도로 뒀습니다.",
+        "result": "온습도 수신과 표시 경로를 분리해 수신 도중 표시값을 유지했습니다."
+      },
+      {
+        "issue": "Open-drain Testbench에서 일시적인 X",
+        "cause": "FPGA Drive Release와 Sensor Testbench Response 구간이 겹쳐 버스 구동 주체가 충돌했습니다.",
+        "action": "Open-drain/Pull-up 조건을 고려해 응답 시작 시점과 동기화된 FSM 입력을 구분했습니다.",
+        "result": "불안정 구간의 X Propagation을 줄여 시뮬레이션을 확인했습니다."
       }
     ],
     "checks": [
       [
-        "센서 수신",
-        "DHT11 / HC-SR04 입력 처리",
-        "Basys3"
+        "DHT11 Start / Receive",
+        "Start Low 약 19 ms, 40bit 수신",
+        "RTL Simulation"
       ],
       [
-        "통신 경로",
-        "FIFO → UART → PC Terminal",
-        "Hardware 확인"
+        "Valid Data",
+        "0x21001B003C → 33/27/60 · valid=1",
+        "Checksum PASS"
+      ],
+      [
+        "Checksum Error",
+        "valid=0 / 이전 출력 Register 유지",
+        "Negative Test"
+      ],
+      [
+        "HC-SR04 팀 통합",
+        "Echo 1000 μs → 17.24 cm 확인",
+        "Team System"
+      ],
+      [
+        "FND / UART",
+        "Basys 3 FND와 PC Terminal에서 측정값 확인",
+        "통합 시연"
       ]
     ],
-    "scope": "센서 정밀도·측정 오차에 대한 정량 평가값은 제공된 자료에 없어 기재하지 않았습니다.",
+    "scope": "주요 구현 내용은 DHT11 Controller와 FND Controller이며 HC-SR04·UART/FIFO/ASCII Decoder 전체를 개인 구현으로 표현하지 않았습니다.",
+    "source": "https://app.notion.com/p/608e099826898246b15281d7d240d36e",
     "github": "https://github.com/ichanmi1009/UART-FIFO-SENSOR-stopwatch_watch"
   },
   "uart-loopback": {
-    "focus": "16× Oversampling으로 UART Bit 중앙을 Sampling하고, 수신한 Byte를 송신기로 되돌리는 전체 경로를 확인했습니다.",
+    "focus": "100 MHz FPGA System Clock에서 9600 bps·8N1·16× Oversampling UART RX/TX RTL을 구현하고, 수신 완료 Pulse를 TX Start에 직접 연결하는 Hardware Loopback을 Basys 3 실보드로 확인했습니다.",
     "spec": [
       [
-        "UART 설정",
-        "9600 bps / 8N1",
-        "Start 1 · Data 8 · Stop 1"
+        "Clock",
+        "100 MHz",
+        "Basys 3"
       ],
       [
-        "RX Sampling",
-        "16× Oversampling",
-        "Start 검출 후 Data Bit 중심 Sample"
+        "Baud",
+        "9600 bps / 8N1 / LSB First",
+        "Start 1, Data 8, Stop 1"
+      ],
+      [
+        "Oversampling",
+        "9600×16 = 153.6 kHz",
+        "약 651 Clock/Tick"
+      ],
+      [
+        "Synchronization",
+        "2-FF RX Input Synchronizer",
+        "비동기 RX→System Clock"
       ]
     ],
     "implementation": [
       {
-        "title": "UART RX / TX FSM",
+        "title": "UART TX · RX FSM",
         "items": [
-          "Start Bit 검출 후 Bit 중앙 Sample을 기준으로 8 Data Bit를 Shift하여 Byte를 복원했습니다.",
-          "TX는 같은 Baud 설정으로 Start–Data–Stop Frame을 생성합니다."
+          "TX는 IDLE→START→DATA→STOP에서 LSB First 8bit를 전송하고 tx_busy로 중복 요청을 제한했습니다.",
+          "RX는 Start Falling Edge 이후 중앙에서 다시 Low를 확인하고 16 Tick 간격으로 Data Bit를 Sampling합니다.",
+          "수신 8Byte?가 아니라 8bit 1Byte 완료 시 rx_done 1Clock Pulse를 생성합니다."
         ]
       },
       {
         "title": "Hardware Loopback",
         "items": [
-          "PC → FPGA UART RX → UART TX → PC로 즉시 되돌려주는 연결을 구현했습니다.",
-          "FPGA 실물에서 전송 Byte와 수신 Byte가 일치하는지 확인했습니다."
-        ]
-      }
-    ],
-    "checks": [
-      [
-        "Frame / Baud",
-        "9600 bps 8N1",
-        "RTL"
-      ],
-      [
-        "PC↔FPGA",
-        "Hardware Loopback 데이터 일치 확인",
-        "보드 테스트"
-      ]
-    ],
-    "scope": "UART 송수신 기능 중심이며 복합 프로토콜 에러 주입이나 장시간 BER 측정 결과를 주장하지 않았습니다.",
-    "github": "https://github.com/ichanmi1009/UART_LOOPBACK"
-  },
-  "fpga-stopwatch": {
-    "focus": "동일한 Clock 기준에서 Counter로 시간을 생성하고 FSM으로 시계·스톱워치의 상태 전환을 제어했습니다.",
-    "implementation": [
-      {
-        "title": "Timebase / Counter",
-        "items": [
-          "FPGA System Clock을 이용해 시간 갱신 Tick을 만들고 자리올림 Counter를 구현했습니다.",
-          "시·분·초 데이터를 표시부에서 사용할 형식으로 전달합니다."
+          "2단 Synchronizer로 비동기 RX가 내부 FSM에 입력되는 Timing을 안정화했습니다.",
+          "rx_data → tx_data, rx_done → tx_start로 연결해 Processor나 C Code 없이 즉시 Data를 되돌립니다.",
+          "ComportMaster에서 PC→Basys 3→PC Byte가 동일한지 확인했습니다."
         ]
       },
       {
-        "title": "FSM / 표시 제어",
+        "title": "비트 타이밍 검증",
         "items": [
-          "Stopwatch / Watch Mode에 따라 시간 증가 및 표시 경로를 선택합니다.",
-          "7-Segment Scan과 출력 데이터를 연결하여 Basys 3에서 표시합니다."
+          "16× Oversampling Tick과 Start Center Check, Bit Counter·RX Shift Register·TX 출력 파형을 확인했습니다.",
+          "UART 8N1 Simulation에서 8'h30 Loopback Pattern과 rx_done/TX Start 연결을 확인했습니다."
         ]
       }
     ],
     "checks": [
       [
-        "FSM",
-        "Mode 전환",
-        "RTL"
+        "UART TX Frame",
+        "9600bps · 8N1 · LSB First",
+        "RTL Simulation"
       ],
       [
-        "7-Segment",
-        "Time Count 출력",
-        "Basys3"
+        "RX 중앙 Sample",
+        "Start Midpoint + 16Tick/Data Bit",
+        "RTL Simulation"
+      ],
+      [
+        "Loopback Pattern",
+        "8'h30 TX/RX Bit Pattern 일치",
+        "Vivado Simulation"
+      ],
+      [
+        "PC–FPGA Loopback",
+        "ComportMaster 송·수신 Byte 일치",
+        "Basys 3"
       ]
     ],
-    "scope": "추가적인 Stopwatch 정확도 측정치나 별도 Timing Closure 지표는 표시하지 않았습니다.",
+    "scope": "하드웨어 UART 통신 및 Synchronizer/Bit Timing에 대한 교육 프로젝트입니다. 장시간 BER·오류율 등 실측되지 않은 성능 수치는 주장하지 않았습니다.",
+    "github": "https://github.com/ichanmi1009/UART_LOOPBACK",
+    "debug": [
+      {
+        "issue": "RX FSM이 Stop Bit보다 빠르게 STOP State 진입",
+        "cause": "Data 중앙 Sampling을 수행하는 FSM State 전이가 실제 Stop Bit 종료보다 앞서 이뤄졌습니다.",
+        "action": "STOP 대기 조건을 확장해 RX Line High가 안정된 후 IDLE로 복귀하도록 수정했습니다.",
+        "result": "Stop Bit 경계에서 재진입하지 않도록 Timing 여유를 확보했습니다."
+      },
+      {
+        "issue": "RX의 짧은 Low를 Start로 오인",
+        "cause": "비동기 입력의 Noise 또는 순간 Low가 Falling Edge 조건만 충족하면 Frame을 잘못 시작할 수 있습니다.",
+        "action": "2-FF Synchronizer와 Start 중앙 Low 재확인을 적용했습니다.",
+        "result": "Start 검출 후 데이터 수신으로 넘어가는 조건을 강화했습니다."
+      }
+    ],
+    "source": "https://app.notion.com/p/f95e09982689827cad1081cf15360488"
+  },
+  "fpga-stopwatch": {
+    "focus": "2인 팀 프로젝트에서 Watch Control/Datapath와 Top Module을 담당했습니다. 4-bit Shift Register로 수정 자릿수를 선택하고, Safety Gate와 Registered Output을 적용한 뒤 Stopwatch와 FND 자원을 통합했습니다.",
+    "spec": [
+      [
+        "Platform",
+        "Basys 3 / Verilog",
+        "2인 Team"
+      ],
+      [
+        "본인 구현",
+        "watch_control_unit · watch_datapath · top_stopwatch_watch",
+        "Watch / Integration"
+      ],
+      [
+        "선택 신호",
+        "4-bit Rotate 0001→0010→0100→1000",
+        "10ms/초/분/시 선택"
+      ],
+      [
+        "Timebase / FND",
+        "100 MHz → 100 Hz Time Tick, 1 kHz Scan",
+        "10 ms / 4-digit FND"
+      ]
+    ],
+    "implementation": [
+      {
+        "title": "Watch Datapath / 자리수 선택",
+        "items": [
+          "4bit Shift Register에서 Time Unit을 순환 선택하고 Up/Down Signal이 선택된 Counter에만 적용되도록 제어했습니다.",
+          "10ms·초·분·시 최대값 경계의 Roll-over 및 AM/PM 관련 출력 값을 연결했습니다.",
+          "Watch 입력 신호는 Stopwatch 모드와 분리해 관리합니다."
+        ]
+      },
+      {
+        "title": "Safety Gate / Registered Output",
+        "items": [
+          "초기 FSM 기반 버튼 제어에서 전환 Timing으로 입력이 누락되는 문제를 발견했습니다.",
+          "수정 Mode Switch에서만 Up/Down Signal을 허용하는 Safety Gate로 단순화했습니다.",
+          "조합 출력의 Glitch를 막도록 방향 출력은 System Clock 기준 Register에 저장했습니다."
+        ]
+      },
+      {
+        "title": "Top-Level System Integration",
+        "items": [
+          "Stopwatch·Watch의 msec/second/minute/hour 출력은 Mode MUX를 통해 하나의 FND Controller로 전달합니다.",
+          "LED에 Display Mode와 AM/PM 상태를 전달하고 Basys 3 실보드의 시간 설정 및 Mode 전환을 확인했습니다.",
+          "Button Debounce·Stopwatch Datapath·FND의 팀 작업 범위를 혼동하지 않았습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "Watch 수정 버튼 입력 누락",
+        "cause": "단순 입력 Gate 기능에 FSM을 추가하면서 상태 전이와 Button Pulse Timing이 어긋났습니다.",
+        "action": "FSM을 제거하고 Mode Switch 기준 Safety Gate로 입력 허용을 제한했습니다.",
+        "result": "수정 모드에서 Up/Down이 선택 자릿수에 반영됨을 확인했습니다."
+      },
+      {
+        "issue": "조합 출력 Glitch",
+        "cause": "비동기 버튼 변화를 Combinational 출력으로 바로 전달해 Glitch가 발생했습니다.",
+        "action": "System Clock에 동기화된 출력 Register를 추가했습니다.",
+        "result": "출력 변화 시점을 Register 기준으로 정리했습니다."
+      }
+    ],
+    "checks": [
+      [
+        "자릿수 선택",
+        "0001→0010→0100→1000 순환",
+        "Watch Control RTL"
+      ],
+      [
+        "Watch 시간 조정",
+        "선택 Counter만 Up/Down 변경",
+        "RTL Simulation"
+      ],
+      [
+        "Mode Safety Gate",
+        "수정 비활성 입력 차단",
+        "RTL Simulation"
+      ],
+      [
+        "Top Module",
+        "Stopwatch/Watch FND 공유 · AM/PM LED",
+        "Basys 3"
+      ]
+    ],
+    "scope": "2인 팀 프로젝트. 본인 담당은 Watch Control·Datapath 및 Top Integration이며 Stopwatch Datapath를 단독으로 설계했다고 표현하지 않았습니다.",
+    "source": "https://app.notion.com/p/ae1e0998268982519873817e261e821c",
     "github": "https://github.com/ichanmi1009/stopwatch-watch"
   }
 };
