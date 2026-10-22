@@ -71,3 +71,21 @@
 .hero-meta .hero-gpa{font:11px ui-monospace,monospace;color:#586a5e}
 .hero-meta .hero-gpa strong{font-size:12px;color:var(--green)}
 @media(max-width:380px){.edu-school-row{align-items:flex-start;flex-direction:column;gap:5px}.edu-gpa-value strong{font-size:23px}}
+
+
+/* Original waveform screenshot gallery */
+.waveform-section{background:#fbfaf7;border-top:1px solid #e8e3da}
+.waveform-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.waveform-card{margin:0;border:1px solid #e4e1d8;border-radius:11px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.waveform-image-link{position:relative;display:flex;align-items:center;justify-content:center;min-height:170px;background:#f4f4f2;border-bottom:1px solid #e8e5e0;cursor:zoom-in}
+.waveform-image-link img{display:block;max-width:100%;width:100%;height:auto;max-height:320px;object-fit:contain}
+.waveform-zoom{position:absolute;bottom:9px;right:10px;padding:7px 10px;border:1px solid #cbd6cf;border-radius:5px;background:rgba(250,252,250,.96);font-size:11px;font-weight:700;color:#16543b}
+.waveform-card figcaption{padding:16px 18px 20px}
+.waveform-number{font:10px ui-monospace,monospace;color:#b16d45;letter-spacing:1.7px;display:block;margin-bottom:8px}
+.waveform-card figcaption strong{display:block;color:#16291e;font-size:14px;line-height:1.6}
+.waveform-card figcaption p{font-size:12px;color:#607268;line-height:1.8;margin:8px 0 0}
+.waveform-note{border-left:3px solid #bb9672;background:#fffaf4;padding:16px 19px;border-radius:0 6px 6px 0;color:#6b5d4d;line-height:1.9;font-size:13px;margin:0 0 18px}
+.waveform-source-links{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.waveform-link{display:inline-flex;align-items:center;padding:11px 16px;border:1px solid #cddbcf;border-radius:6px;background:white;color:#13553d!important;font-size:12px;font-weight:700;text-decoration:none}
+.waveform-link:hover{background:#eaf3ed}
+@media(max-width:700px){.waveform-grid{grid-template-columns:1fr}.waveform-image-link{min-height:120px}}
