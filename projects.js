@@ -6,7 +6,7 @@ window.PORTFOLIO = {
   projects: [
     {
       slug: 'can-adas', title: 'CAN 기반 ADAS 차량 제어 시스템',
-      category: '차량 · SoC', filter: 'vehicle', period: '2026.09 — 2026.10', featured: true,
+      category: '차량 · CAN RTL', filter: 'vehicle', period: '2026.09 — 2026.10', featured: true,
       summary: 'CAN RX RTL과 STM32 VCU Firmware를 연결해 인식 결과가 실제 차량 제어로 이어지는 통신·제어 경로를 구현했습니다.',
       role: 'CAN RX RTL 설계 · Bit Timing 개선 · STM32 VCU CAN Firmware',
       tags: ['Verilog', 'CAN 2.0', 'STM32', 'Zynq', 'AXI4-Lite'],
@@ -47,7 +47,7 @@ window.PORTFOLIO = {
       architecture: ['영상 인식 / ADAS ECU', 'CAN Bus', 'FPGA CAN RX', 'STM32 VCU', 'Motor ECU']
     },
     {
-      slug: 'fpga-adas-isp', title: 'FPGA 기반 ADAS ISP SoC', category: '차량 · SoC', filter: 'vehicle',
+      slug: 'fpga-adas-isp', title: 'FPGA 기반 ADAS ISP SoC', category: 'FPGA · ISP SoC', filter: 'vehicle',
       period: '2026.08 — 2026.09', featured: true,
       summary: '카메라 영상에 Red Detection ISP를 구현하고 AXI4-Lite 주변장치와 연결해 영상 처리 데이터를 시스템에서 활용했습니다.',
       role: 'Red Detect ISP · ROI / Red Decoder · Gaussian Blur',
@@ -60,7 +60,7 @@ window.PORTFOLIO = {
       architecture:['OV7670', 'Pixel Capture', 'ISP / ROI', 'AXI4-Lite', 'Output']
     },
     {
-      slug: 'spi-i2c-uvm', title: 'SPI · I2C RTL 설계 및 UVM 검증', category:'검증 · UVM', filter:'verification',
+      slug: 'spi-i2c-uvm', title: 'SPI · I2C RTL 설계 및 UVM 검증', category:'RTL · UVM 검증', filter:'verification',
       period:'2026.06.11 — 2026.06.18', featured:true,
       summary:'SPI·I2C Master/Slave RTL을 설계하고 Transaction 기반 UVM 환경으로 프로토콜 동작을 검증했습니다.',
       role:'SPI / I2C RTL · UVM Testbench · Scoreboard / Coverage',
@@ -84,7 +84,7 @@ window.PORTFOLIO = {
       takeaway:'영상 파이프라인에서는 데이터 자체뿐 아니라 valid와 주소의 시점까지 정렬해야 합니다.',architecture:['OV7670','Pixel Capture','BRAM','VGA Timing','Display']
     },
     {
-      slug:'axi-soc',title:'AXI4-Lite SoC Peripheral 통합',category:'차량 · SoC',filter:'vehicle',period:'2026.06.21 — 2026.06.30',
+      slug:'axi-soc',title:'AXI4-Lite SoC Peripheral 통합',category:'RTL · SoC',filter:'soc',period:'2026.06.21 — 2026.06.30',
       summary:'GPIO·Timer·UART·SPI 주변장치를 AXI4-Lite Register Map으로 통합하고 C Firmware와 연결했습니다.',
       role:'AXI4-Lite IP · Register Map · Bare-metal C',tags:['AXI4-Lite','MicroBlaze','C','Vivado','Vitis'],
       highlights:['AXI4-Lite Register Map 구성', 'Custom Peripheral IP 통합', 'MicroBlaze App–Driver–HAL 연동'],
@@ -104,7 +104,7 @@ window.PORTFOLIO = {
       takeaway:'모델 출력이 사용 가능한 시스템 정보가 되려면 전처리와 후처리, UI 경로를 함께 고려해야 합니다.',architecture:['Camera / Video','YOLO11','Tracking','MiVOLO','Web UI']
     },
     {
-      slug:'stm32-keymatrix-pir',title:'CMSIS KeyMatrix · PIR 센서 제어',category:'Firmware',filter:'fpga',period:'2026.07.23 — 2026.07.27',
+      slug:'stm32-keymatrix-pir',title:'CMSIS KeyMatrix · PIR 센서 제어',category:'MCU · Firmware',filter:'firmware',period:'2026.07.23 — 2026.07.27',
       summary:'STM32에서 CMSIS Register 접근과 HAL을 비교하며 Key Matrix와 PIR 센서를 Bare-metal로 제어했습니다.',
       role:'STM32 Register / HAL · Key Matrix · PIR',tags:['STM32','CMSIS','HAL','Bare-metal'],
       highlights:['CMSIS Register / HAL 구현', 'Key Matrix 스캔 처리', 'PIR 센서 입력 확인'],
@@ -124,7 +124,7 @@ window.PORTFOLIO = {
       takeaway:'명령어 한 개의 처리도 여러 하위 블록의 정확한 조합으로 완성된다는 점을 배웠습니다.',architecture:['Instruction','Decoder','Register File','ALU','Writeback']
     },
     {
-      slug:'uart-fifo-uvm',title:'SystemVerilog UART · FIFO 클래스 검증',category:'검증 · UVM',filter:'verification',period:'2026.05.12 — 2026.05.18',
+      slug:'uart-fifo-uvm',title:'SystemVerilog UART · FIFO 클래스 검증',category:'SystemVerilog · 검증',filter:'verification',period:'2026.05.12 — 2026.05.18',
       summary:'UART·FIFO DUT를 Class 기반 검증 환경으로 구성해 재사용 가능한 테스트벤치를 만들었습니다.',
       role:'Generator · Driver · Monitor · Scoreboard',tags:['SystemVerilog','OOP','UART','FIFO'],
       highlights:['Generator / Driver / Monitor / Scoreboard 구성', 'UART·FIFO 시나리오 검증', 'Class 기반 검증 환경 분리'],
@@ -134,7 +134,7 @@ window.PORTFOLIO = {
       takeaway:'검증 코드도 역할을 분리하면 수정과 재사용이 쉬워집니다.',architecture:['Generator','Driver','UART / FIFO','Monitor','Scoreboard']
     },
     {
-      slug:'uart-fifo-sensor',title:'UART · FIFO 기반 PC–FPGA 센서 연동',category:'FPGA · 영상',filter:'fpga',period:'2026.05.01 — 2026.05.06',
+      slug:'uart-fifo-sensor',title:'UART · FIFO 기반 PC–FPGA 센서 연동',category:'FPGA · 센서',filter:'fpga',period:'2026.05.01 — 2026.05.06',
       summary:'DHT11·HC-SR04 센서 값을 FPGA에서 받아 UART·FIFO로 PC에 전송하는 데이터 경로를 구성했습니다.',
       role:'Sensor Interface · UART / FIFO · PC Link',tags:['SystemVerilog','UART','FIFO','Basys3'],
       highlights:['DHT11 / HC-SR04 센서 인터페이스', 'UART·FIFO 데이터 경로', 'PC–FPGA 통신 확인'],
@@ -144,7 +144,7 @@ window.PORTFOLIO = {
       takeaway:'서로 다른 속도의 블록은 버퍼를 통해 데이터 흐름을 안정적으로 연결할 수 있습니다.',architecture:['DHT11 / HC-SR04','Sensor Interface','FIFO','UART TX','PC']
     },
     {
-      slug:'uart-loopback',title:'UART 9600bps Hardware Loopback',category:'RTL · CPU',filter:'rtl',period:'2026.04.23 — 2026.04.27',
+      slug:'uart-loopback',title:'UART 9600bps Hardware Loopback',category:'RTL · UART',filter:'rtl',period:'2026.04.23 — 2026.04.27',
       summary:'9600 bps UART RX/TX를 16배 Oversampling으로 구현하고 PC–FPGA Loopback 동작을 확인했습니다.',
       role:'UART RX / TX RTL · Sampling · Loopback',tags:['SystemVerilog','UART','Basys3','9600 bps'],
       highlights:['RX·TX 16배 Oversampling', '9600 bps / 8N1 Frame 처리', 'PC–FPGA Hardware Loopback'],
@@ -154,7 +154,7 @@ window.PORTFOLIO = {
       takeaway:'샘플링 시점을 정확히 정의하는 것이 Serial 통신 구현의 출발점임을 확인했습니다.',architecture:['PC UART','FPGA RX','FIFO / Data','FPGA TX','PC UART']
     },
     {
-      slug:'fpga-stopwatch',title:'FPGA Stopwatch · Watch',category:'RTL · CPU',filter:'rtl',period:'2026.04.16 — 2026.04.20',
+      slug:'fpga-stopwatch',title:'FPGA Stopwatch · Watch',category:'RTL · FPGA',filter:'rtl',period:'2026.04.16 — 2026.04.20',
       summary:'Counter와 FSM, 7-Segment를 조합해 스톱워치와 시계 모드가 전환되는 FPGA 회로를 설계했습니다.',
       role:'Counter · FSM · 7-Segment Display',tags:['SystemVerilog','FSM','7-Segment','Basys3'],
       highlights:['Counter / FSM 설계', '7-Segment 표시 제어', 'Stopwatch / Watch 모드 전환'],
