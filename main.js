@@ -27,7 +27,7 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     const status = $('#filter-status');
     const empty = $('#empty-state');
     function render(filter){
-      const matches = projects.filter(p => filter === 'all' || p.filter === filter);
+      const matches = projects.filter(p => filter === 'all' || p.filter === filter || (Array.isArray(p.filters) && p.filters.includes(filter)));
       const primary = matches.filter(p => p.featured);
       const secondary = matches.filter(p => !p.featured);
       featured.innerHTML = primary.map(p => projectCard(p,projects.indexOf(p),true)).join('');
@@ -39,7 +39,9 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
       buttons.forEach(b => { const active = b.dataset.filter === filter; b.classList.toggle('active',active); b.setAttribute('aria-pressed',String(active)); });
     }
     buttons.forEach(b => b.addEventListener('click', () => render(b.dataset.filter)));
-    render('all');
+    const requestedFilter = new URLSearchParams(location.search).get('filter');
+    const validFilters = new Set(buttons.map(b => b.dataset.filter));
+    render(validFilters.has(requestedFilter) ? requestedFilter : 'all');
   }
 
   function setupMenu(){
