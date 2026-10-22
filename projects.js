@@ -115,32 +115,32 @@ window.PORTFOLIO = {
     },
     {
       slug:'rv32i-cpu',title:'RV32I 37명령 Single-Cycle CPU',category:'RTL · CPU',filter:'rtl',period:'2026.05.19 — 2026.05.27',
-      summary:'RV32I 명령어 37개를 지원하는 단일 사이클 CPU를 Datapath와 Control Unit 중심으로 설계했습니다.',
+      summary:"RV32I 37개 명령의 Single-Cycle Datapath를 구현하고 C→RISC-V Assembly→CPU 실행으로 1~10 누적합 55를 검증했습니다.",
       role:'Single-Cycle CPU · Datapath · Control Unit',tags:['SystemVerilog','RISC-V','Basys3','CPU'],
-      highlights:['RV32I 37개 명령 디코딩', 'Datapath / Control Unit 설계', 'Basys3 타깃 RTL 구현'],
-      context:'RV32I Instruction 처리 경로를 설계하며 CPU 내부의 Control과 Datapath 상호작용을 확인했습니다.',
+      highlights:["R/I/Load/S/B/U/J/JALR 37명령 구현","C·Assembly 통합 실행: sum=55","R-Type·Store·JALR 파형 검증"],
+      context:"SystemVerilog로 PC·Instruction Memory·Register File·ALU·Data Memory·Control Unit을 연결한 RV32I CPU입니다. 명령어 계열별 RTL Simulation과 GCC로 변환한 C 누적합 프로그램 실행을 검증했습니다.",
       steps:[{"heading":"RV32I 37명령 Decoder","text":"Opcode와 Instruction Format을 기준으로 ALU Control, Register Write, Branch/Jump 선택 신호를 생성했습니다."},{"heading":"Single-Cycle Datapath","text":"PC → Instruction → Register File → ALU → Memory/Writeback 경로를 구성하고 PC Update MUX를 연결했습니다."},{"heading":"R-Type · Store · JALR 검증","text":"Instruction별 시뮬레이션 파형에서 ALU, Memory Write, PC 업데이트가 의도대로 동작하는지 확인했습니다."}],
-      verification:['RV32I 37개 명령어 지원 범위 점검', 'Single-Cycle 데이터 흐름 분석'],
+      verification:["R/I/Load/S/B/U/J/JALR 계열 총 37개 명령어","C 1~10 누적합 sum=55 → data_ram[58] / 주소232","완료 값 0x12345678 → data_ram[59], JAL/JALR 호출·복귀 확인"],
       takeaway:'명령어 한 개의 처리도 여러 하위 블록의 정확한 조합으로 완성된다는 점을 배웠습니다.',architecture:['Instruction','Decoder','Register File','ALU','Writeback']
     },
     {
       slug:'uart-fifo-uvm',title:'SystemVerilog UART · FIFO 클래스 검증',category:'SystemVerilog · 검증',filter:'verification',period:'2026.05.12 — 2026.05.18',
-      summary:'UART·FIFO DUT를 Class 기반 검증 환경으로 구성해 재사용 가능한 테스트벤치를 만들었습니다.',
+      summary:"UART RX/TX·FIFO·Loopback을 SystemVerilog Class 기반 Generator·Driver·Monitor·Scoreboard로 자동 검증했습니다.",
       role:'Generator · Driver · Monitor · Scoreboard',tags:['SystemVerilog','OOP','UART','FIFO'],
-      highlights:['Generator / Driver / Monitor / Scoreboard 구성', 'UART·FIFO 시나리오 검증', 'Class 기반 검증 환경 분리'],
-      context:'UART/FIFO 기능을 모듈별 관측과 비교로 검증하는 Testbench 설계 프로젝트입니다.',
+      highlights:["UART RX 500 / TX 500 / Loopback 500 PASS","FIFO Random 500 중 실제 Pop 344건 비교 PASS","Mailbox·Event·tx_busy 동기화 검증"],
+      context:"UART/FIFO의 단위·통합 Testbench를 SystemVerilog Class·Mailbox·Event로 구축했습니다. UVM Framework는 사용하지 않은 Class-based Verification이며 자동 Data 비교와 Transaction 순서 검증을 수행했습니다.",
       steps:[{"heading":"Class 기반 Transaction/Generator","text":"SystemVerilog Class로 전송 데이터와 제어 조건을 정의하고 Generator가 검증 자극을 생성하도록 구성했습니다."},{"heading":"Driver → DUT → Monitor","text":"Driver가 입력을 구동하고 Monitor가 UART RX/TX 및 FIFO 실제 동작을 관찰하도록 역할을 분리했습니다."},{"heading":"Scoreboard와 파형 검증","text":"예상 데이터와 관측 결과를 비교하고 UART/FIFO/Loopback 파형으로 검증 지점을 확인했습니다."}],
-      verification:['UART/FIFO 기능 시나리오 검증', 'Class 기반 Testbench 모듈 간 동작 확인'],
+      verification:["UART RX 500·TX 500·UART/FIFO Loopback 500 PASS / FAIL 0","FIFO Random 500 시도 중 Pop 344회 실제 데이터 비교 PASS","UART RX→FIFO RX 16Byte Full/Pop 및 Boundary 00/55/AA/FF 확인"],
       takeaway:'검증 코드도 역할을 분리하면 수정과 재사용이 쉬워집니다.',architecture:['Generator','Driver','UART / FIFO','Monitor','Scoreboard']
     },
     {
       slug:'uart-fifo-sensor',title:'UART · FIFO 기반 PC–FPGA 센서 연동',category:'FPGA · 센서',filter:'fpga',period:'2026.05.01 — 2026.05.06',
-      summary:'DHT11·HC-SR04 센서 값을 FPGA에서 받아 UART·FIFO로 PC에 전송하는 데이터 경로를 구성했습니다.',
-      role:'Sensor Interface · UART / FIFO · PC Link',tags:['SystemVerilog','UART','FIFO','Basys3'],
-      highlights:['DHT11 / HC-SR04 센서 인터페이스', 'UART·FIFO 데이터 경로', 'PC–FPGA 통신 확인'],
-      context:'센서 입력부터 FIFO 저장과 UART 송신까지 연속된 FPGA 데이터 경로를 다룬 프로젝트입니다.',
-      steps:[{"heading":"DHT11 · HC-SR04 Sensor Interface","text":"온습도와 거리 센서의 서로 다른 입력 Timing을 FPGA에서 처리하도록 인터페이스를 구성했습니다."},{"heading":"FIFO Buffer","text":"측정값을 FIFO에 저장해 센서 데이터 생성 주기와 UART 전송 속도 차이를 완충했습니다."},{"heading":"UART → PC Terminal","text":"FIFO에서 읽은 센서 값을 UART로 전송하고 PC Terminal에서 수신 결과를 확인했습니다."}],
-      verification:['센서 데이터 전송 경로 확인', 'PC Terminal 수신 확인'],
+      summary:"DHT11 40-bit Single-wire Controller와 FND Mode MUX를 구현해 온습도·거리·시계 데이터를 UART/FIFO 시스템에 통합했습니다.",
+      role:"DHT11 Controller · Checksum/Valid · FND Controller · 팀 통합",tags:['SystemVerilog','UART','FIFO','Basys3'],
+      highlights:["DHT11 40-bit FSM · Checksum/Valid","1kHz FND Scan · 4자리 Mode MUX","수신 중 FND 깜빡임을 출력 Register 분리로 해결"],
+      context:"3인 팀의 Basys 3 통합 프로젝트입니다. 주요 구현 내용은 DHT11의 40-bit Single-wire FSM 및 FND Controller이고, PC ASCII/HC-SR04/UART/FIFO는 전체 시스템의 다른 경로입니다.",
+      steps:[{"heading":"DHT11 40-bit 수신","text":"START Low 약 19ms 이후 Sensor의 High 유지시간을 계수해 0/1을 판별하고 40bit Shift Register를 구성했습니다."},{"heading":"Checksum·valid","text":"4Byte Checksum 비교와 STOP 완료를 동시에 만족할 때만 valid를 발생시켜 온습도 출력 Register를 갱신했습니다."},{"heading":"FND · UART/FIFO 시스템 통합","text":"온습도·거리·Stopwatch/Watch Data를 Mode에 따라 MUX하고 1kHz 4자리 FND Scan에 연결했습니다."}],
+      verification:["DHT11 수신 0x21001B003C → 습도33/온도27/Checksum60, valid=1","Checksum 오류 시 valid=0, 출력 Register 유지","PC ASCII 명령으로 모드 전환, 센서 값 FND·PC Terminal 연동 확인"],
       takeaway:'서로 다른 속도의 블록은 버퍼를 통해 데이터 흐름을 안정적으로 연결할 수 있습니다.',architecture:['DHT11 / HC-SR04','Sensor Interface','FIFO','UART TX','PC']
     },
     {
@@ -150,18 +150,18 @@ window.PORTFOLIO = {
       highlights:['RX·TX 16배 Oversampling', '9600 bps / 8N1 Frame 처리', 'PC–FPGA Hardware Loopback'],
       context:'UART의 Start, Data, Stop Bit 처리와 Clock 기준 Sampling을 직접 구현한 기초 RTL 프로젝트입니다.',
       steps:[{"heading":"9600 bps · 8N1 Frame","text":"Start 1bit, Data 8bit, Stop 1bit 형태의 UART TX/RX FSM과 Baud Timing을 구현했습니다."},{"heading":"2-FF Sync / 16× Oversampling","text":"비동기 RX를 동기화한 후 Data Bit 중앙에서 Sampling하여 수신 Byte를 복원했습니다."},{"heading":"PC–FPGA Loopback","text":"수신 Byte를 다시 UART TX로 송신하고 실물 보드 및 시뮬레이션 파형에서 일치 여부를 확인했습니다."}],
-      verification:['9600 bps 8N1 UART Frame 확인', 'PC–FPGA Hardware Loopback 검증'],
+      verification:["100 MHz 기반 9600bps · 16× Oversampling (약 651 Clock/Tick)","UART 8N1 LSB First, Start 중앙 확인, rx_done Pulse","ComportMaster 실보드에서 PC→FPGA→PC Loopback 전송·수신 일치"],
       takeaway:'샘플링 시점을 정확히 정의하는 것이 Serial 통신 구현의 출발점임을 확인했습니다.',architecture:['PC UART','FPGA RX','FIFO / Data','FPGA TX','PC UART']
     },
     {
       slug:'fpga-stopwatch',title:'FPGA Stopwatch · Watch',category:'RTL · FPGA',filter:'rtl',period:'2026.04.16 — 2026.04.20',
-      summary:'Counter와 FSM, 7-Segment를 조합해 스톱워치와 시계 모드가 전환되는 FPGA 회로를 설계했습니다.',
-      role:'Counter · FSM · 7-Segment Display',tags:['SystemVerilog','FSM','7-Segment','Basys3'],
-      highlights:['Counter / FSM 설계', '7-Segment 표시 제어', 'Stopwatch / Watch 모드 전환'],
-      context:'FPGA의 기본 순차회로와 상태 전이를 실제 보드 Display에 연결한 프로젝트입니다.',
-      steps:[{"heading":"시간 Tick / Counter","text":"FPGA Clock으로 시간 갱신 Tick을 만들고 자리올림 Counter를 구성했습니다."},{"heading":"Watch · Stopwatch FSM","text":"모드 및 버튼 이벤트에 따른 시간 증가·정지·전환 상태를 구현했습니다."},{"heading":"7-Segment 출력 / 검증","text":"7-Segment Scan에 시간 데이터를 연결하고 Stopwatch, Watch, AM/PM 전환 시뮬레이션을 확인했습니다."}],
-      verification:['Stopwatch 동작 확인', '모드 전환과 표시 동작 확인'],
-      takeaway:'간단한 UI도 시간 기준과 상태 전이를 분명히 정의해야 예측 가능하게 동작합니다.',architecture:['Clock','Counter','FSM','7-Segment','Display']
+      summary:"Watch Control/Datapath와 Top Module을 구현해 4bit Shift 자릿수 선택, Safety Gate, Stopwatch/Watch 출력 MUX를 통합했습니다.",
+      role:"Watch Control · Watch Datapath · Top Integration · 팀 실보드 검증",tags:['SystemVerilog','FSM','7-Segment','Basys3'],
+      highlights:["4-bit Shift 자릿수 선택 0001→0010→0100→1000","Mode Safety Gate · Clock 동기 출력 Register","Watch/Stopwatch FND 공유 · AM/PM LED"],
+      context:"2인 팀의 Basys 3 디지털 시계 프로젝트입니다. 주요 구현 내용은 Watch Control Unit, Watch Datapath 및 Top Module 통합입니다. Stopwatch Datapath와 공통 입력 처리 등은 팀 시스템 구성으로 구분합니다.",
+      steps:[{"heading":"Watch 시간 설정 Datapath","text":"4bit Shift Register로 10ms·초·분·시 중 수정할 자릿수를 순환 선택하고 선택 Counter에 Up/Down을 적용했습니다."},{"heading":"Safety Gate + Registered Output","text":"FSM 방식에서 버튼 입력이 누락되어 Mode Switch로 입력을 제어하는 Safety Gate 및 동기 Register 구조로 수정했습니다."},{"heading":"Top Integration","text":"Stopwatch/Watch msec·sec·min·hour를 MUX로 선택해 공통 FND 및 AM/PM LED에 연결했습니다."}],
+      verification:["Watch 자릿수 선택 0001→0010→0100→1000 순환 확인","Mode 비활성 입력 차단, Watch/Stopwatch 전환 확인","Basys 3 FND와 AM/PM LED 실보드 동작 확인"],
+      takeaway:'간단한 UI도 시간 기준과 상태 전이를 분명히 정의해야 예측 가능하게 동작합니다.',architecture:["Button Debounce","Watch Control / Datapath","Mode MUX","FND 1kHz Scan","LED · AM/PM"]
     }
   ]
 };
