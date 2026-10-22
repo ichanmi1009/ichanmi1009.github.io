@@ -581,101 +581,299 @@ window.PORTFOLIO.technicalDetails = {
     "github": "https://github.com/ichanmi1009/AXI_Peripheral"
   },
   "jetson-ai": {
-    "focus": "Jetson의 On-Device 추론 출력을 실제 사용자에게 보이는 Result Pipeline으로 연결했습니다.",
+    "focus": "차량 안전 시스템에서 놓치면 안 되는 대상을 우선했습니다. YOLO11n/s/m의 전체 Accuracy만 보지 않고 아동(Young) Recall과 Edge 연산 자원을 비교한 뒤 Fine-tuning과 Jetson 실행 파이프라인까지 연결했습니다.",
+    "spec": [
+      [
+        "Platform / 모델",
+        "NVIDIA Jetson Orin Nano / YOLO11n·s·m / MiVOLO V2",
+        "2열 잔류 감지"
+      ],
+      [
+        "Base Model 선정",
+        "YOLO11n: Young Recall 75.31%, Animal Recall 86.67%",
+        "E2E Latency 886.82 ms, 2.6M Parameters"
+      ],
+      [
+        "학습 조건",
+        "Train 268 / Validation 35, 앞 10 Layer Freeze",
+        "AdamW, LR 0.0005, 10 Epoch"
+      ],
+      [
+        "Unified Evaluation 211",
+        "Final Accuracy 79.15% → 95.26%",
+        "Young 75.31%→93.83%; Animal 86.67%→96.67%"
+      ],
+      [
+        "검출 개선",
+        "mAP50 51.00% → 90.44%; F1 55.20%→85.87%",
+        "Fine-tuning 평가 기준"
+      ],
+      [
+        "Edge 동작",
+        "YOLO 2 Frame당 1회 / MiVOLO 약 1초 간격",
+        "최근 5회 Age의 Median 사용"
+      ],
+      [
+        "경고 기준",
+        "정상 5 / 10 / 20분 → Stage 1/2/3",
+        "시연 10 / 15 / 20초 축소"
+      ]
+    ],
     "implementation": [
       {
-        "title": "Detection / 추론 파이프라인",
+        "title": "YOLO11n/s/m 성능 분석 및 선정",
         "items": [
-          "Jetson Orin Nano에서 YOLO11 및 MiVOLO 추론 환경을 구성했습니다.",
-          "추론 결과의 탐지·추적 값을 Web UI에 전달해 영상과 함께 확인하도록 구성했습니다."
+          "YOLO11n/s/m의 Final Accuracy, Young/Animal Recall, E2E Latency, Parameters, FLOPs를 동일 평가 조건에서 비교했습니다.",
+          "YOLO11s의 전체 Accuracy가 높았지만 아동 미검출 감소와 연산량을 고려해 YOLO11n을 Base Model로 선정했습니다.",
+          "단순 정확도 대신 False Negative를 안전 핵심 지표로 설정한 설계 판단을 명시했습니다."
         ]
       },
       {
-        "title": "구현 점검",
+        "title": "YOLO11n Fine-tuning",
         "items": [
-          "모델 실행과 Tracking 출력, Web UI 시각화 경로를 각각 확인했습니다.",
-          "정확도·지연시간의 정량 성능이 확인되지 않은 항목은 수치로 표시하지 않았습니다."
+          "Person·Cat·Dog의 다양한 구도를 추가하고 앞단 10 Layer를 Freeze한 뒤 AdamW, LR 0.0005, 10 Epoch를 적용했습니다.",
+          "Unified Evaluation 211에서 Young Recall +18.52%p, Animal Recall +10.00%p, Person Detection Rate +20.53%p를 확인했습니다.",
+          "Young Person의 Detector 단계 미검출 17건이 Fine-tuning 후 0건이 됐으며, 연령 추정 단계 오류와 구분했습니다."
         ]
+      },
+      {
+        "title": "Detection → Tracking → Age Estimation",
+        "items": [
+          "Webcam → YOLO11 → Person Tracking ID → MiVOLO V2 Age → CHILD/ADULT/ANIMAL 분류 → Risk Stage로 연결했습니다.",
+          "Person은 추정 Age≤7을 CHILD로, Cat/Dog는 ANIMAL로 판단했습니다.",
+          "YOLO TensorRT Engine과 MiVOLO TorchScript를 사용하고 Frame Skip·Age Median으로 실행 빈도를 조절했습니다."
+        ]
+      },
+      {
+        "title": "잔류 시간 기반 Stage / Web UI",
+        "items": [
+          "차량 시동 OFF 상태에서 Child/Animal 검출 지속 시간을 누적하고 알림·Web UI에 Stage를 표시하도록 연계했습니다.",
+          "운영 기준 5/10/20분과 시연용 10/15/20초를 구분했습니다.",
+          "1열 운전자·2열 잔류·외부 보안 카메라 3개 하위 시스템 중 주요 구현 내용은 2열 감지와 모델 성능 비교입니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "전체 Accuracy가 높아도 아동 미검출이 많은 문제",
+        "cause": "YOLO11s는 전체 Accuracy가 높았으나 안전 핵심 대상인 Young Recall이 YOLO11n보다 낮았습니다.",
+        "action": "Young/Animal Recall·Latency·Power/Complexity 기준으로 YOLO11n을 선택하고 Person/Cat/Dog 데이터를 추가 학습했습니다.",
+        "result": "Young Recall 75.31%→93.83%, Animal Recall 86.67%→96.67%로 개선했습니다."
+      },
+      {
+        "issue": "Detector와 Age Estimator 오류 혼동",
+        "cause": "Child 미검출 현상이 탐지 누락인지 연령 분류 오류인지 구분되지 않으면 개선 대상이 달라집니다.",
+        "action": "Confusion Matrix와 Young Miss 사례에서 YOLO Detection 결과와 MiVOLO Age Estimation을 단계별로 분리해 분석했습니다.",
+        "result": "Detector 기준 Young Miss 17건→0건; 일부 잔여 분류 오류는 Age Estimation 경로로 구분했습니다."
       }
     ],
     "checks": [
       [
-        "On-Device 실행",
-        "Jetson에서 추론 파이프라인 동작 확인",
-        "수행 환경"
+        "YOLO11n Base Model",
+        "Young 75.31% / Animal 86.67% / E2E Latency 886.82ms",
+        "동일 평가 조건 비교"
       ],
       [
-        "결과 가시화",
-        "추론·추적 정보 Web UI 표시",
-        "시스템 UI"
+        "Fine-tuned / Unified Evaluation 211",
+        "Young 93.83% / Animal 96.67% / Final Accuracy 95.26%",
+        "공통 평가셋 기준"
+      ],
+      [
+        "Person Detection Rate",
+        "78.81% → 99.34%",
+        "Detector 단계"
+      ],
+      [
+        "Jetson Edge 동작",
+        "Detection→Tracking→MiVOLO→Stage→Web UI",
+        "시연·통합 경로"
       ]
     ],
-    "scope": "정량 FPS·정확도 데이터는 별도 증빙이 확인되기 전까지 기재하지 않았습니다."
+    "scope": "3인 팀 프로젝트(팀장). 개인 구현 및 분석 중심은 2열 잔류 객체 검출, YOLO 모델 비교·Fine-tuning, Edge Performance Trade-off, 결과 Web UI 시연입니다. 1열 졸음 및 외부 보안 하위 시스템을 모두 개인 구현으로 표현하지 않았습니다. 지표는 Notion에 기록된 평가 조건에서의 결과입니다.",
+    "source": "https://app.notion.com/p/cc5e0998268982c2900e014356023108"
   },
   "stm32-keymatrix-pir": {
-    "focus": "동일 주변장치를 CMSIS Register 직접 접근과 HAL API로 다루어 추상화 계층에 따른 차이를 확인했습니다.",
+    "focus": "STM32F411RE에서 HAL 없이 CMSIS Peripheral Register로 시스템을 구현했습니다. PIR EXTI가 Key Matrix를 활성화하고, 비밀번호 인증 결과가 Servo·I2C LCD·Buzzer로 이어지도록 설계했습니다.",
+    "spec": [
+      [
+        "MCU / Toolchain",
+        "STM32F411RE Nucleo-64 / C (CMSIS Bare-metal)",
+        "HAL 사용하지 않음"
+      ],
+      [
+        "GPIO · Keypad",
+        "PA6~PA9 Row 출력, PB4~PB7 Column 입력",
+        "4×4 Matrix Scan"
+      ],
+      [
+        "PIR",
+        "PD2 EXTI2 Rising Edge",
+        "접근 감지 후 Keypad 활성화"
+      ],
+      [
+        "Servo / Buzzer",
+        "TIM5 CH1 PWM / TIM3 CH3 PWM",
+        "도어 구동·인증음"
+      ],
+      [
+        "Display",
+        "I2C2 · PCF8574 LCD Backpack",
+        "4-bit LCD 전송"
+      ],
+      [
+        "UART Debug",
+        "115200 bps, PA2/PA3",
+        "상태 확인"
+      ]
+    ],
     "implementation": [
       {
-        "title": "GPIO 및 Key Matrix",
+        "title": "CMSIS Register 직접 제어",
         "items": [
-          "핀 Direction/Pull과 Input Data를 설정하고 Key Matrix의 Row/Column Scan으로 키 값을 판별했습니다.",
-          "Key Scan 주기와 입력 변화가 Application에 전달되는 경로를 구성했습니다."
+          "RCC·GPIO·SYSCFG·EXTI·NVIC·TIM·I2C Register를 HAL 추상화 없이 초기화하고 주변장치를 제어했습니다.",
+          "EXTI2 Rising Edge를 PIR 감지 Event로 사용하고 TIM5/3 PWM은 서보모터 구동과 부저 출력에 연결했습니다.",
+          "PCF8574 LCD Backpack을 I2C Register와 4bit LCD 전송 방식으로 구동했습니다."
         ]
       },
       {
-        "title": "PIR Sensor 제어",
+        "title": "Key Matrix FSM / 비밀번호 인증",
         "items": [
-          "PIR 센서 입력 이벤트를 GPIO 기반으로 읽고 제어 로직에 전달했습니다.",
-          "Register 접근과 HAL API 양쪽에서 동일 이벤트 흐름을 비교했습니다."
+          "IDLE→SET_ROW→READ_ROW→KEY_RELEASE FSM으로 GPIO Row 출력과 Column Sampling을 서로 다른 상태에서 수행합니다.",
+          "4자리 비밀번호를 입력한 후 비교하고 정상 인증 시 Servo Open과 LCD·Buzzer 출력을 실행합니다.",
+          "성공 직후 비밀번호 변경, 입력 취소, 실패 후 재입력 등 Application 상태를 구성했습니다."
         ]
+      },
+      {
+        "title": "입력 조건과 출력 분리",
+        "items": [
+          "PIR을 감지하지 않은 동안 Keypad 입력을 무시하고 감지 후 인증 흐름을 시작합니다.",
+          "연속회전형 Servo는 위치 제어가 아닌 PWM·구동 시간으로 문을 여닫습니다.",
+          "LCD는 상태가 바뀔 때만 갱신해 불필요한 I2C Blocking을 줄였습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "Key 1회 입력이 중복 인식",
+        "cause": "GPIO Row 출력 직후 Column 값을 즉시 읽어 신호 안정화 전/후 상태가 한 스캔에서 섞였습니다.",
+        "action": "Blocking Delay 대신 SET_ROW와 READ_ROW를 분리한 FSM으로 서로 다른 Loop 호출에서 Write/Sample을 수행했습니다.",
+        "result": "동일 Key의 중복 입력이 재현되지 않도록 수정하고 실보드에서 확인했습니다."
+      },
+      {
+        "issue": "KEY_RELEASE State가 덮어써짐",
+        "cause": "입력 감지 후 KEY_RELEASE를 저장해도 반복문 뒤에 있는 무조건 State 대입이 값을 덮어썼습니다.",
+        "action": "Key 감지 여부에 따른 조건부 분기로 State Update를 제한했습니다.",
+        "result": "Key 검출 시 즉시 KEY_RELEASE로 전이하고 미검출 시에만 다음 Row를 탐색합니다."
       }
     ],
     "checks": [
       [
-        "Key Scan",
-        "키 입력 상태 감지",
-        "실물 MCU"
+        "PIR 감지",
+        "미감지 상태 Keypad 무반응 / 감지 후 Keypad 활성화",
+        "STM32F411RE 실보드"
       ],
       [
-        "PIR Event",
-        "감지 입력과 이벤트 처리",
-        "STM32"
+        "4자리 인증",
+        "성공→Servo Open/LCD, 실패→Buzzer·Try Again",
+        "실보드 PASS"
+      ],
+      [
+        "입력 상태",
+        "취소 D / 성공 후 비밀번호 변경 / 중복 Key 방지",
+        "실보드 PASS"
+      ],
+      [
+        "주변장치 연동",
+        "CMSIS EXTI·GPIO·TIM·I2C, I2C LCD 출력",
+        "HAL 미사용"
       ]
     ],
-    "scope": "센서 반응 시간 등 측정하지 않은 정량 지표는 포함하지 않았습니다.",
+    "scope": "교육 프로젝트이며 회사 Firmware 실무가 아닙니다. 실보드 MCU는 STM32F411RE입니다. HAL API 비교가 아니라 CMSIS Register 직접 제어한 Bare-metal 구현입니다.",
+    "source": "https://app.notion.com/p/323e0998268983ab8d8b011904c550a6",
     "github": "https://github.com/ichanmi1009/STM32-SmartDoorLock"
   },
   "rv32i-cpu": {
-    "focus": "Instruction Decode 결과가 Register File·ALU·PC Update·Writeback MUX를 제어하는 경로를 Single-Cycle 구조로 통합했습니다.",
+    "focus": "RV32I Single-Cycle CPU의 37개 명령을 구현하고 RISC-V GCC로 변환한 C 1~10 누적합 프로그램에서 sum=55, 완료 표시 0x12345678까지 확인했습니다.",
+    "spec": [
+      [
+        "ISA / RTL",
+        "RV32I 37 Instruction",
+        "R10 · I9 · Load5 · S3 · B6 · U2 · J/JALR2"
+      ],
+      [
+        "CPU 구조",
+        "Single-Cycle · 32×32 Register File",
+        "PC/Instruction/ALU/Memory/Control"
+      ],
+      [
+        "최종 누적합",
+        "sum=55 → data_ram[58]",
+        "Byte Address 232"
+      ],
+      [
+        "완료 값",
+        "0x12345678 → data_ram[59]",
+        "Halt Loop 확인"
+      ]
+    ],
     "implementation": [
       {
-        "title": "CPU Datapath",
+        "title": "Datapath · Control Unit",
         "items": [
-          "PC → Instruction Decode → Register File → ALU → Writeback 경로를 구성했습니다.",
-          "Opcode와 Instruction Format에 따라 ALU Control, Register Write, Branch/Jump 선택 신호를 분리했습니다."
+          "PC·Instruction Memory·Register File·Immediate Generator·ALU·Data Memory·Writeback을 Single-Cycle 구조로 구성했습니다.",
+          "Opcode/funct3/funct7을 해독해 ALU Control·RegWrite·MemWrite·Branch/Jump·Writeback 선택 신호를 생성했습니다.",
+          "Load Byte/Half/Word의 Sign/Zero Extend와 Store Byte/Half/Word, Signed/Unsigned Branch를 구분합니다."
         ]
       },
       {
-        "title": "명령어 검증",
+        "title": "Instruction별 RTL 검증",
         "items": [
-          "37개 지원 Instruction의 연산 및 Data 이동 경로를 테스트했습니다.",
-          "Control Path에서 선택 신호가 바뀌면 Datapath 결과가 어떻게 달라지는지 Waveform으로 추적했습니다."
+          "R/I-Type의 Arithmetic/Logic/Shift와 Store/Load/Branch/JALR의 Control·PC·Memory 경로를 Simulation으로 확인했습니다.",
+          "SLT/SLTU, SRL/SRA와 같은 Signed/Unsigned·Shift 차이를 테스트 데이터로 분리했습니다.",
+          "R-Type·Store·JALR의 실 파형을 상세 페이지에 연결했습니다."
         ]
+      },
+      {
+        "title": "C → GCC → Instruction Memory → CPU",
+        "items": [
+          "1~10 누적합 C 프로그램을 RISC-V GCC로 컴파일해 Instruction Memory에 배치했습니다.",
+          "JAL/JALR 호출·복귀를 거쳐 data_ram[58]에 55, data_ram[59]에 완료 표시값 0x12345678을 저장했습니다.",
+          "최종 동일 PC를 반복하는 Halt Loop를 확인했습니다."
+        ]
+      }
+    ],
+    "debug": [
+      {
+        "issue": "Store Width 차이가 파형에서 구분되지 않음",
+        "cause": "초기 Memory 값의 하위 Byte가 반복되어 SW/SH/SB를 수행해도 파형상 차이가 명확하지 않았습니다.",
+        "action": "SW·SH·SB가 각각 다른 Address와 구분되는 입력 Data를 사용하도록 Testbench를 변경했습니다.",
+        "result": "SW 0x55AACC11, SH 0x0000CC11, SB 0x00000011 저장 결과를 분리 확인했습니다."
       }
     ],
     "checks": [
       [
-        "ISA 범위",
-        "RV32I 37개 명령 지원",
-        "구현 범위"
+        "37 Instruction",
+        "R/I/Load/S/B/U/J/JALR 계열별 Data/Control Simulation",
+        "RTL Test"
       ],
       [
-        "RTL 설계",
-        "Single-Cycle Datapath / Decoder 연결",
-        "SystemVerilog"
+        "GCC 통합 검증",
+        "1~10 반복 누적합 sum=55 / address 232",
+        "C→Assembly→CPU"
+      ],
+      [
+        "완료 조건",
+        "data_ram[59]=0x12345678, Halt Loop",
+        "프로그램 실행"
+      ],
+      [
+        "JAL/JALR",
+        "함수 호출 return address 및 간접 복귀",
+        "파형"
       ]
     ],
-    "scope": "Pipelined CPU나 전체 RISC-V 확장은 구현 범위에 포함하지 않았습니다.",
+    "scope": "RV32I 37명령 Single-Cycle 구현이며 Pipeline·Cache·전체 ISA 확장은 구현 범위가 아닙니다.",
+    "source": "https://app.notion.com/p/caae0998268982029a8281b6886daa8b",
     "github": "https://github.com/ichanmi1009/RV32I_singlecycle"
   },
   "uart-fifo-uvm": {
