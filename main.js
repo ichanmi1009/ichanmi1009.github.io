@@ -72,6 +72,18 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
   }
 
 
+
+  function renderWaveformGallery(p){
+    const g=window.PORTFOLIO?.waveforms?.[p.slug];
+    if(!g)return;
+    const images=(g.images||[]).map((v,i)=>'<figure class="waveform-card"><a class="waveform-image-link" href="'+html(v.src)+'" target="_blank" rel="noopener noreferrer" title="파형 원본을 새 창에서 확대"><img src="'+html(v.src)+'" alt="'+html(v.title)+'" loading="lazy" decoding="async"><span class="waveform-zoom">원본 파형 확대 ↗</span></a><figcaption><span class="waveform-number">FIG '+String(i+1).padStart(2,'0')+'</span><strong>'+html(v.title)+'</strong><p>'+html(v.caption)+'</p></figcaption></figure>').join('');
+    const links=(g.links||[]).map(v=>'<a class="waveform-link" href="'+html(v.url)+'" target="_blank" rel="noopener noreferrer">'+html(v.title)+' <span aria-hidden="true">↗</span></a>').join('');
+    const txt=g.note?'<p class="waveform-note">'+html(g.note)+'</p>':'';
+    const content='<section class="section waveform-section" id="waveform-evidence"><div class="container"><div class="section-intro"><span class="section-num">04.6 <span></span> ACTUAL VERIFICATION MATERIAL</span><h2>실제 검증 파형 · 출력 결과</h2><p>기존 프로젝트 GitHub에 보관된 원본 시뮬레이션·Logic Analyzer·Coverage 캡처입니다. 이미지를 클릭하면 확대해서 볼 수 있습니다.</p></div>'+(images?'<div class="waveform-grid">'+images+'</div>':'')+txt+(links?'<div class="waveform-source-links">'+links+'</div>':'')+'</div></section>';
+    const engineering=document.querySelector('#engineering-detail');
+    if(engineering)engineering.insertAdjacentHTML('afterend',content);
+  }
+
   function renderEngineeringDetails(p){
     const d=window.PORTFOLIO?.technicalDetails?.[p.slug];
     if(!d)return;
@@ -130,6 +142,7 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
     const results = p.results || [{value:'RTL',label:'직접 구현',detail:p.role.split('·')[0].trim()},{value:'FPGA',label:'데이터 경로',detail:p.architecture?.slice(0,2).join(' → ')||'설계'},{value:'검증',label:'구현 결과 확인',detail:'상세 내용은 좌측 참조'}];
     $('#project-results').innerHTML=results.map(item=>`<div><strong>${html(item.value)}</strong><span>${html(item.label)}</span><small>${html(item.detail)}</small></div>`).join('');
     renderEngineeringDetails(p);
+    renderWaveformGallery(p);
     $('#project-takeaway').textContent=p.takeaway;
     const next=projects[(projects.indexOf(p)+1)%projects.length];
     $('#next-project-link').href=detailLink(next);
