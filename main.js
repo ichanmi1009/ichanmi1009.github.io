@@ -1,0 +1,123 @@
+const viewingDetail=new URLSearchParams(location.search).has('slug');const chosenTemplate=document.getElementById(viewingDetail?'project-template':'home-template');const fragment=chosenTemplate.content.cloneNode(true);document.body.replaceChildren(fragment);document.body.dataset.page=viewingDetail?'project':'home';
+/* 프로젝트 데이터: 텍스트만 수정하면 카드와 상세 페이지에 함께 반영됩니다. */
+
+(() => {
+  'use strict';
+  const data = window.PORTFOLIO;
+  const projects = data?.projects || [];
+  const $ = (selector) => document.querySelector(selector);
+  const html = (val) => String(val ?? '').replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
+  const badges = (arr) => (arr || []).map(t => `<span>${html(t)}</span>`).join('');
+  const detailLink = (project) => `index.html?slug=${encodeURIComponent(project.slug)}`;
+
+  function projectCard(p, idx, featured) {
+    const tagHTML = `<div class="stack-tags">${badges(p.tags)}</div>`;
+    const cardTop = `<div class="project-card-top"><div class="category-line"><span class="mini-label">${html(p.category)}</span>${featured ? '<span class="featured-word">FEATURED</span>' : ''}</div><span class="card-index">${String(idx + 1).padStart(2, '0')}</span></div>`;
+    const left = `<div class="card-col">${cardTop}<h3><a href="${detailLink(p)}">${html(p.title)}</a></h3><span class="period">${html(p.period)}</span><p class="summary">${html(p.summary)}</p>${featured && p.award ? `<div class="award-line">◇ &nbsp;${html(p.award)}</div>` : ''}${featured ? '' : `<ul class="highlights">${p.highlights.map(t=>`<li>${html(t)}</li>`).join('')}</ul>${tagHTML}`}</div>`;
+    const right = featured ? `<div class="card-col"><ul class="highlights">${p.highlights.map(t=>`<li>${html(t)}</li>`).join('')}</ul>${tagHTML}</div>` : '';
+    const bottom = `<div class="project-card-footer"><a class="case-link" href="${detailLink(p)}">케이스 스터디 보기 &nbsp;→</a><a class="github-profile-link" href="${html(data.github)}" target="_blank" rel="noopener noreferrer" title="개별 저장소 링크가 아닌 GitHub 프로필입니다">⌘ GitHub 프로필</a></div>`;
+    return `<article class="project-card ${featured ? 'featured-card' : ''}">${left}${right}${bottom}</article>`;
+  }
+
+  function setupCards(){
+    const featured = $('#featured-projects');
+    const others = $('#other-projects');
+    if (!featured || !others) return;
+    const buttons = [...document.querySelectorAll('[data-filter]')];
+    const status = $('#filter-status');
+    const empty = $('#empty-state');
+    function render(filter){
+      const matches = projects.filter(p => filter === 'all' || p.filter === filter);
+      const primary = matches.filter(p => p.featured);
+      const secondary = matches.filter(p => !p.featured);
+      featured.innerHTML = primary.map(p => projectCard(p,projects.indexOf(p),true)).join('');
+      others.innerHTML = secondary.map(p => projectCard(p,projects.indexOf(p),false)).join('');
+      featured.hidden = !primary.length;
+      others.hidden = !secondary.length;
+      empty.hidden = !!matches.length;
+      status.textContent = `${matches.length}개의 프로젝트가 표시됩니다.`;
+      buttons.forEach(b => { const active = b.dataset.filter === filter; b.classList.toggle('active',active); b.setAttribute('aria-pressed',String(active)); });
+    }
+    buttons.forEach(b => b.addEventListener('click', () => render(b.dataset.filter)));
+    render('all');
+  }
+
+  function setupMenu(){
+    const button = $('.mobile-menu-button');
+    const menu = $('#mobile-menu');
+    if (!button || !menu) return;
+    button.addEventListener('click', () => {
+      const expanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded',String(!expanded));
+      button.setAttribute('aria-label',expanded?'메뉴 열기':'메뉴 닫기');
+      menu.hidden = expanded;
+    });
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      menu.hidden = true;
+      button.setAttribute('aria-expanded','false');
+    }));
+  }
+
+  function setupCopy(){
+    const toast = $('#toast');
+    let toastHandle = 0;
+    document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
+      const val = button.dataset.copy;
+      let success = false;
+      try{ if(navigator.clipboard && window.isSecureContext){await navigator.clipboard.writeText(val);success = true;} }
+      catch(error){ success = false; }
+      if(!success){ const ta = document.createElement('textarea');ta.value=val;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{success=document.execCommand('copy');}catch(error){}ta.remove(); }
+      if(toast){toast.textContent=success?'클립보드에 복사했습니다.':'복사할 수 없습니다. 주소를 직접 선택해 주세요.';toast.classList.add('show');window.clearTimeout(toastHandle);toastHandle=window.setTimeout(()=>toast.classList.remove('show'),2200);}
+    }));
+  }
+
+  function setupProjectDetail(){
+    if(document.body.dataset.page !== 'project') return;
+    const slug = new URLSearchParams(window.location.search).get('slug') || 'can-adas';
+    const p = projects.find(entry => entry.slug === slug);
+    if(!p){
+      document.title='프로젝트를 찾을 수 없습니다 | 이찬미';
+      $('#main').innerHTML='<section class="section"><div class="container"><h1>프로젝트를 찾을 수 없습니다.</h1><p>목록에서 프로젝트를 다시 선택해 주세요.</p><a class="btn btn-green" href="index.html#projects">프로젝트 목록으로</a></div></section>';
+      return;
+    }
+    document.title=`${p.title} | 이찬미`;
+    $('#project-category').textContent=p.category;
+    $('#featured-word').hidden=!p.featured;
+    $('#project-period').textContent=p.period;
+    $('#project-period-secondary').textContent=p.period;
+    $('#project-title').textContent=p.title;
+    $('#project-summary').textContent=p.summary;
+    $('#project-role').textContent=p.role;
+    $('#file-index').textContent=String(projects.indexOf(p)+1).padStart(2,'0');
+    $('#project-award').innerHTML=p.award?`<div class="award-badge">◇ &nbsp;${html(p.award)}</div>`:'';
+    $('#project-stack').innerHTML=badges(p.tags);
+    $('#context-tags').innerHTML=badges(p.tags.slice(0,5));
+    $('#project-context').textContent=p.context;
+    const probs = p.problems && p.problems.length?p.problems : [{label:'핵심 설계 과제',text:p.summary},{label:'검증 관점',text:p.highlights[0]}];
+    $('#problem-heading').textContent=p.problems?.length?'부딪힌 문제':'주요 설계 과제';
+    $('#project-problems').innerHTML=probs.map((item,i)=>`<div class="problem-item"><span>${String(i+1).padStart(2,'0')}</span><div><strong>${html(item.label)}</strong>${html(item.text)}</div></div>`).join('');
+    $('#project-steps').innerHTML=p.steps.map((step,i)=>`<article class="step-card"><div class="step-number">STEP ${String(i+1).padStart(2,'0')}</div><h3>${html(step.heading)}</h3><p>${html(step.text)}</p></article>`).join('');
+    const flow = p.architecture || [];
+    $('#project-graphic').innerHTML=`<div class="graphic-top"><span>SYSTEM / DATA PATH</span><span>${html(p.tags[0] || 'RTL')}</span></div><div class="graphic-trace"></div><div class="flow-diagram">${flow.map((v,i) => `${i?'<span class="flow-arrow" aria-hidden="true">›</span>':''}<div class="flow-node">${html(v)}</div>`).join('')}</div><div class="graphic-caption">SYSTEM ARCHITECTURE OVERVIEW</div>`;
+    const deep=$('#deep-content');
+    if(p.comparisons?.length && p.layers?.length){
+      deep.innerHTML=`<div class="deep-grid"><article class="deep-card"><div class="deep-card-head"><h3>${html(p.deepLeftTitle)}</h3><p>${html(p.deepLeftIntro)}</p></div><div>${p.comparisons.map(row=>`<div class="compare-row"><span>${html(row[0])}</span><span class="compare-old">${html(row[1])}</span><span class="compare-new">${html(row[2])}</span></div>`).join('')}</div></article><article class="deep-card"><div class="deep-card-head"><h3>${html(p.deepRightTitle)}</h3><p>하드웨어 제어와 애플리케이션 판단의 책임을 구분했습니다.</p></div>${p.layers.map(row=>`<div class="layer-row"><div class="layer-name"><span>${html(row[0])}</span>${html(row[1])}</div><p>${html(row[2])}</p></div>`).join('')}</article></div>`;
+    }else{
+      deep.innerHTML=`<div class="verification-panel"><article class="module-architecture"><h3>SYSTEM ARCHITECTURE</h3><div class="arch-steps">${flow.map((v,i)=>`${i?'<b aria-hidden="true">→</b>':''}<span>${html(v)}</span>`).join('')}</div></article><article class="design-note"><h3>주요 구현 내용</h3><ul class="check-list">${(p.highlights||[]).map(t=>`<li>${html(t)}</li>`).join('')}</ul></article></div>`;
+      $('#deep-intro').textContent='프로젝트의 데이터 경로와 주요 구현 기능을 중심으로 정리했습니다.';
+    }
+    $('#verification-list').innerHTML=(p.verification||[]).map(v=>`<li>${html(v)}</li>`).join('');
+    const results = p.results || [{value:'RTL',label:'직접 구현',detail:p.role.split('·')[0].trim()},{value:'FPGA',label:'데이터 경로',detail:p.architecture?.slice(0,2).join(' → ')||'설계'},{value:'검증',label:'구현 결과 확인',detail:'상세 내용은 좌측 참조'}];
+    $('#project-results').innerHTML=results.map(item=>`<div><strong>${html(item.value)}</strong><span>${html(item.label)}</span><small>${html(item.detail)}</small></div>`).join('');
+    $('#project-takeaway').textContent=p.takeaway;
+    const next=projects[(projects.indexOf(p)+1)%projects.length];
+    $('#next-project-link').href=detailLink(next);
+    $('#next-project-name').textContent=next.title;
+  }
+
+  setupMenu();
+  setupCards();
+  setupCopy();
+  setupProjectDetail();
+})();
+
