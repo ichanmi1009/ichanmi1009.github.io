@@ -248,19 +248,30 @@ window.PORTFOLIO.technicalDetails = {
         "issue": "1. RX/TX 개별 Tick에 따른 공통 Timing 기준 불일치",
         "cause": "CAN RX와 TX, Hard Sync와 Resync가 독립적인 Tick 기준을 사용하면 Bit Boundary 및 Sample Point의 Timing 기준이 달라질 수 있는 구조였습니다.",
         "action": "ACK Timing과 송수신 시점 문제를 검토하는 과정에서 RX/TX 공용 TQ Tick을 직접 제안하고 공통 can_bit_timing 기준으로 구조를 정리했습니다. Hard Sync 시 BRP Counter 초기화도 같은 Timing 경로에서 다룹니다.",
-        "result": "RX/TX가 동일한 Bit Timing Tick과 Sample Point를 공유하도록 구조를 정리했습니다. 이 항목은 자기 송신 Edge Resync 오류와 구분되는 공통 Clock 기준 설계 개선입니다."
+        "result": "RX/TX가 동일한 Bit Timing Tick과 Sample Point를 공유하도록 구조를 정리했습니다. 이 항목은 자기 송신 Edge Resync 오류와 구분되는 공통 Clock 기준 설계 개선입니다.",
+        "evidenceIndices": [
+          1
+        ]
       },
       {
         "issue": "2. 자기 송신 Dominant Edge에 따른 불필요한 Positive Resync",
         "cause": "VCU가 직접 송신한 Dominant(0) Edge가 RX Falling Edge로도 검출되어 외부 통신 Edge가 아닌데도 Positive Resync 조건에 진입했습니다.",
         "action": "rx_idle과 실제 TX Line Level을 Bit Timing의 Resync 판단에 반영하고, 자기 송신 중 검출된 Dominant Edge를 외부 수신 동기화 Edge와 구분하도록 수정했습니다.",
-        "result": "불필요한 Resync에 따른 Bit Time 2.125 μs 이탈 사례를 500 kbps 기준 2.000 μs로 복원했습니다. 공통 Tick 구조 개선의 결과와 혼동하지 않고 별도 원인으로 설명합니다."
+        "result": "불필요한 Resync에 따른 Bit Time 2.125 μs 이탈 사례를 500 kbps 기준 2.000 μs로 복원했습니다. 공통 Tick 구조 개선의 결과와 혼동하지 않고 별도 원인으로 설명합니다.",
+        "evidenceIndices": [
+          2,
+          3
+        ]
       },
       {
         "issue": "3. CRC Sequence–Delimiter 경계의 Form Error 전이",
         "cause": "CRC 수신과 Delimiter 구간의 Input Valid / State 전이가 어긋나 정상 Frame이 RX_ERROR_FLAG로 이동한 디버깅 이력이 있습니다.",
         "action": "CRC 15bit 수신, CRC Check, Delimiter Recessive 판정 및 FSM 전이를 분리해 확인했습니다.",
-        "result": "현재 RTL에서 RX_CRC_DELIMITER의 destuff_en=1 설정 등 실제 구현 상태를 원본 기록과 일치시켜 명시하고, 일반적인 프로토콜 설명과 혼동하지 않았습니다."
+        "result": "현재 RTL에서 RX_CRC_DELIMITER의 destuff_en=1 설정 등 실제 구현 상태를 원본 기록과 일치시켜 명시하고, 일반적인 프로토콜 설명과 혼동하지 않았습니다.",
+        "evidenceIndices": [
+          4,
+          5
+        ]
       }
     ],
     "checks": [
@@ -1454,15 +1465,53 @@ window.PORTFOLIO.technicalDetails = {
 // 공개 저장소의 원본 RTL/Logic Analyzer/Verification 캡처를 그대로 표시합니다.
 window.PORTFOLIO.waveforms = {
   "can-adas": {
-    "note": "CAN Hard Sync·Resync, CRC Delimiter 디버깅 파형은 Notion 원본에 있습니다. 해당 이미지의 공개 파일 주소를 확보하지 못해 임의 파형이나 합성 이미지를 대신 게시하지 않았습니다.",
+    "note": "이 섹션의 CAN 파형·RTL 구조도·UVM 출력 이미지는 제공한 Notion 포트폴리오 ZIP에서 직접 추출한 원본 자료입니다. 공통 TQ Tick 구조와 자기 송신 Edge Resync 오류를 구분해 표시합니다.",
     "links": [
       {
-        "title": "Hard Sync · Resync 파형 원본",
-        "url": "https://app.notion.com/p/5d0e099826898393a606818e23cc082b"
+        "title": "Notion 원본 CAN 프로젝트 기록",
+        "url": "https://app.notion.com/p/3e6e09982689810d8a2df537627333a2"
+      }
+    ],
+    "images": [
+      {
+        "title": "Vision ECU → VCU → Motor ECU 시스템 구성",
+        "src": "assets/original-can/can-ecu-architecture.png",
+        "caption": "Vision ECU가 영상 인식 결과를 CAN으로 전송하고 Basys 3 VCU가 주행 명령을 STM32 Motor ECU에 전달하는 전체 구조"
       },
       {
-        "title": "CAN RX CRC · Error 디버깅 파형 원본",
-        "url": "https://app.notion.com/p/825e0998268983fb883c815ad5eb9f46"
+        "title": "CAN RX/TX 공통 TQ · Bit Timing 연결 구조",
+        "src": "assets/original-can/can-common-timing-structure.png",
+        "caption": "개별 Tick 제거 후 공통 can_bit_timing 기준을 적용한 RTL Block Design 자료"
+      },
+      {
+        "title": "자기 송신 Dominant Edge Resync — 수정 전",
+        "src": "assets/original-can/can-self-resync-before.png",
+        "caption": "RX Falling Edge가 자기 송신 Dominant 구간과 겹치면서 Resync가 발생하고 Bit Time이 2.125 μs로 이탈한 원본 파형"
+      },
+      {
+        "title": "자기 송신 Dominant Edge Resync — 수정 후",
+        "src": "assets/original-can/can-self-resync-after.png",
+        "caption": "자기 송신 Edge를 Resync 대상에서 제외한 수정 결과. 500 kbps 기준 Bit Time 2.000 μs 복원"
+      },
+      {
+        "title": "CRC Sequence–Delimiter 오류 파형",
+        "src": "assets/original-can/can-crc-form-error.png",
+        "caption": "CRC와 Delimiter 경계에서 FSM 상태 및 Error Flag 경로를 추적한 실제 Simulation 화면"
+      },
+      {
+        "title": "CRC / Form Error 경계 분석 파형",
+        "src": "assets/original-can/can-crc-frame-check.png",
+        "caption": "CRC 수신 종료·Delimiter 판정과 RX FSM 전이 시점을 추적한 추가 원본 파형"
+      },
+      {
+        "title": "Safety Domain UVM Regression 출력",
+        "src": "assets/original-can/can-safety-regression.png",
+        "caption": "CAN Fault · Watchdog · Clock Fault · ECC 및 Fault Log 관련 UVM Regression 원본 결과"
+      },
+      {
+        "title": "Safety Domain Code Coverage",
+        "src": "assets/original-can/can-safety-coverage.png",
+        "caption": "VCS/Verdi UVM 회귀 검증에서 수집한 실제 RTL Code Coverage 화면"
       }
     ]
   },
@@ -1740,6 +1789,73 @@ window.PORTFOLIO.waveforms = {
         "title": "CMSIS 도어락 구조",
         "src": "https://raw.githubusercontent.com/ichanmi1009/STM32-SmartDoorLock/main/docs/images/system_architecture.png",
         "caption": "PIR·Keypad·Servo·LCD"
+      }
+    ]
+  },
+  "ov7670-vga": {
+    "images": [
+      {
+        "title": "OV7670 / Zynq PS–PL Block Design",
+        "src": "assets/notion-originals/ov7670-block-design.png",
+        "caption": "AXI4-Lite 주변장치와 Camera–BRAM–VGA 실구현 Block Design"
+      },
+      {
+        "title": "OV7670 PCLK/HREF/VSYNC Data Capture",
+        "src": "assets/notion-originals/ov7670-bram-logic.png",
+        "caption": "카메라 신호의 Pixel Data Capture와 BRAM Write Timing 참고 원본"
+      },
+      {
+        "title": "ILA VSYNC Trigger 조건",
+        "src": "assets/notion-originals/ov7670-ila-trigger.png",
+        "caption": "Vivado ILA의 VSYNC Trigger 설정 실제 화면"
+      },
+      {
+        "title": "OV7670 BRAM Write Logic Analyzer",
+        "src": "assets/notion-originals/ov7670-bram-write-wave.png",
+        "caption": "Vivado Simulation/ILA에서 BRAM Write Enable과 데이터 경로를 추적한 실제 화면"
+      }
+    ]
+  },
+  "fpga-adas-isp": {
+    "images": [
+      {
+        "title": "카메라 / 신호 Oscilloscope 측정 01",
+        "src": "assets/notion-originals/isp-oscilloscope-1.png",
+        "caption": "FPGA 영상처리 시스템의 입력 신호 측정 원본"
+      },
+      {
+        "title": "카메라 / 신호 Oscilloscope 측정 02",
+        "src": "assets/notion-originals/isp-oscilloscope-2.png",
+        "caption": "입력 파형과 Noise 분석에 사용한 실제 계측기 화면"
+      },
+      {
+        "title": "Sobel ISP 영상 결과 — 원본 01",
+        "src": "assets/notion-originals/isp-sobel-noisy-output.png",
+        "caption": "카메라 입력 Noise가 포함된 Edge Detection 실제 출력"
+      },
+      {
+        "title": "Sobel ISP 영상 결과 — 원본 02",
+        "src": "assets/notion-originals/isp-sobel-edge-output.png",
+        "caption": "차선·환경 Edge를 확인한 실제 FPGA 영상처리 출력"
+      }
+    ]
+  },
+  "jetson-ai": {
+    "images": [
+      {
+        "title": "YOLO11n/s/m 모델 비교",
+        "src": "assets/notion-originals/yolo11-comparison.png",
+        "caption": "모델별 Precision·Recall·F1·mAP 등 Detection 성능 실측 비교"
+      },
+      {
+        "title": "YOLO11n Fine-tuning 전후",
+        "src": "assets/notion-originals/yolo11-finetuning.png",
+        "caption": "YOLO11n Base Model 대비 추가 학습 후 Detection Metric 비교"
+      },
+      {
+        "title": "YOLO / MiVOLO End-to-End 성능",
+        "src": "assets/notion-originals/yolo11-end-to-end.png",
+        "caption": "Young·Animal 포함 최종 분류 정확도 및 Recall 비교"
       }
     ]
   }
