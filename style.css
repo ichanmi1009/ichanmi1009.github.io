@@ -96,3 +96,8 @@
 .debug-evidence-links a:hover{border-bottom-color:#1e6249}
 .waveform-card{scroll-margin-top:25px}
 .waveform-card:target{outline:2px solid #779e8e;outline-offset:2px}
+
+/* Alternate hardware engineering portfolio navigation */
+.portfolio-version-switch{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin-top:18px;font-size:12px}
+.portfolio-version-switch a{font-weight:800;color:#10513e;border-bottom:1px solid #10513e;padding-bottom:3px}
+.portfolio-version-switch span{font-size:11px;color:#6b7975}
