@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#203b46">
+<meta name="theme-color" content="#0e233b">
 <meta name="description" content="이찬미 Hardware Engineer 포트폴리오. 반도체 검사장비용 Load Board PCB 회로설계 실무와 Signal/Power Integrity, FPGA·센서 인터페이스 검증 프로젝트.">
 <title>이찬미 | Hardware Engineering Portfolio</title>
 <style>
@@ -17,6 +17,119 @@
 .skill-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.skill-group{border-top:2px solid var(--deep);padding:24px 0 12px}.skill-group h3{font-size:19px;margin-bottom:8px}.skill-group>p{font-size:12px;margin-bottom:20px}.skill-list{display:grid;gap:14px}.skill-list div{display:grid;grid-template-columns:120px 1fr;gap:14px;border-bottom:1px solid var(--line);padding-bottom:13px}.skill-list strong{font-size:12px}.skill-list span{font-size:12px;color:var(--sub)}.profile-strip{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:20px;margin-top:55px;padding-top:27px;border-top:1px solid var(--line)}.profile-strip div{min-width:0}.profile-strip small{font-size:10px;letter-spacing:.1em;font-weight:750;color:var(--teal)}.profile-strip strong{display:block;font-size:15px;margin:7px 0}.profile-strip p{font-size:12px;line-height:1.6}.privacy{margin-top:28px;color:var(--muted);font-size:11px;border-left:2px solid var(--accent);padding-left:13px}
 .contact{background:#1b373e;color:white;padding:77px 0}.contact-grid{display:grid;grid-template-columns:1.3fr .7fr;align-items:center;gap:48px}.contact h2{font-size:clamp(29px,3vw,41px);margin-bottom:12px}.contact p{color:#d1dfe0;font-size:14px;line-height:1.9;margin:0}.contact-links{display:flex;flex-direction:column;gap:10px;align-items:stretch}.contact .action{border-color:#aec9c9;color:white;justify-content:space-between;min-width:240px}.contact .action.primary{background:#fff;color:var(--deep);border-color:#fff}.contact .action.secondary:hover{background:#2c535a}.footer{padding:22px 0;border-top:1px solid #40626a;background:#1b373e;color:#d2e3e2;font-size:11px}.footer .wrap{display:flex;justify-content:space-between;gap:12px}.footer a{text-decoration:underline;text-underline-offset:3px}
 @media(max-width:1000px){.nav{gap:15px}.hero-grid{gap:30px}.case{grid-template-columns:245px 1fr}.case-steps{gap:12px}.header .switch{display:none}}@media(max-width:800px){.nav{display:none}.header{height:64px}.hero{padding:68px 0 63px}.hero-grid{grid-template-columns:1fr}.technical-sheet{max-width:560px;margin-top:18px}.metrics .wrap{grid-template-columns:1fr 1fr;row-gap:18px}.metric:nth-child(2){border-right:0}.metric:nth-child(3){padding-left:0}.exp-grid{grid-template-columns:1fr;gap:30px}.project-grid{grid-template-columns:1fr 1fr}.section{padding:70px 0}.case{grid-template-columns:1fr}.case-summary{border-right:0;border-bottom:1px solid var(--line);padding:25px}.case-details{padding:25px}.case-steps{grid-template-columns:1fr 1fr 1fr}.contact-grid{grid-template-columns:1fr}}@media(max-width:600px){.wrap{width:min(100% - 30px,var(--max))}.hero{padding:58px 0 52px}h1{font-size:36px}.hero p.lead{font-size:14px}.technical-sheet{padding:26px 24px;box-shadow:8px 9px 0 #e6efed}.metric{padding:6px 14px}.metric b{font-size:32px}.metric small{font-size:11px}.section{padding:58px 0}.section-head{display:block}.aside-note{margin-top:19px}.process{grid-template-columns:1fr 1fr;gap:11px}.process article{padding:17px 15px;min-height:176px}.process h4{font-size:13px}.process p{font-size:11px}.case-details{padding:22px 19px}.case-steps{grid-template-columns:1fr}.case-steps div{border-bottom:1px solid var(--line);padding-bottom:12px}.case-steps div:last-child{border:0}.practice-head{grid-template-columns:1fr}.education-flag{justify-self:start}.project-grid{grid-template-columns:1fr}.project-image{height:228px}.project-body{padding:23px}.skill-grid,.profile-strip{grid-template-columns:1fr}.skill-list div{grid-template-columns:1fr;gap:2px}.contact{padding:60px 0}.footer .wrap{display:block}.footer a{display:block;margin-top:9px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+/* Hardware identity: graphite/navy and instrumentation-amber, independent of RTL green design */
+:root{--ink:#17283e;--sub:#53657b;--muted:#708399;--line:#d9e2ec;--paper:#f5f8fc;--white:#fff;--deep:#132d4a;--teal:#2b659b;--accent:#d99b55;--soft:#ecf3fa;--max:1210px}
+body{background:#fff;color:var(--ink);font-feature-settings:"palt";-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{letter-spacing:-.048em}
+.header{height:76px;background:rgba(250,252,255,.97);border-bottom:1px solid #dce4ee}
+.monogram{width:43px;height:43px;border:2px solid #daa560;background:#123250;color:#fff;font-family:ui-monospace,Consolas,monospace;box-shadow:4px 4px 0 #e6edf5}
+.identity-copy strong{color:#172b42;font-size:16px}
+.identity-copy small{font:650 10px ui-monospace,Consolas,monospace;color:#67809a}
+.nav{gap:25px}.nav a{font-weight:760;color:#3d5975}
+.nav a:hover{color:#1c5b95}
+.eyebrow,.section-no,.overline{color:var(--teal)}
+.action{border-radius:0;min-height:48px;font-size:12px;font-weight:820}
+.action.primary{background:#e5a65a;color:#17283e;border-color:#e5a65a}
+.action.primary:hover{background:#ffc078;border-color:#ffc078}
+.action.secondary:hover{background:#eaf3fd}
+.hero{isolation:isolate;position:relative;overflow:hidden;padding:105px 0 109px;background:#0e233b;border-bottom:5px solid #dfa05b;color:#fff}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;background-image:linear-gradient(to right,rgba(151,187,220,.11) 1px,transparent 1px),linear-gradient(to bottom,rgba(151,187,220,.1) 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(90deg,transparent 0%,#000 46%)}
+.hero::after{content:"BOARD / SIGNAL / POWER";position:absolute;right:34px;bottom:19px;font:650 10px ui-monospace,Consolas,monospace;letter-spacing:.18em;color:#6f90af}
+.hero-grid{grid-template-columns:minmax(0,1.07fr) minmax(340px,.93fr);gap:7%}
+.hero .eyebrow{color:#a9cfff;letter-spacing:.16em}
+.kicker::before{background:#ffc078;width:31px;height:3px}
+.hero h1{font-size:clamp(39px,4.3vw,64px);line-height:1.2;letter-spacing:-.065em;margin-bottom:29px}
+.hero h1 em{color:#ffc178}
+.hero p.lead{color:#d2e1ed;font-size:15px;line-height:2}
+.hero .action.secondary{color:#f4f8ff;background:transparent;border-color:#6987a5}
+.hero .action.secondary:hover{background:#dbeaff;color:#142940}
+.hero-tags span{color:#cfe0f0;border:1px solid #527596;background:rgba(255,255,255,.045);padding:7px 10px}
+.technical-sheet{background:#fafcff;color:#172a41;border:1px solid #b5c8db;border-top:5px solid #f0ae5e;box-shadow:16px 17px 0 rgba(91,129,165,.4);padding:30px 28px}
+.technical-sheet::before{border-color:#e5edf5}
+.sheet-head{border-bottom-color:#173e67}
+.sheet-head span{color:#1e4268;font-family:ui-monospace,Consolas,monospace}
+.sheet-head small{color:#69849b;font-family:ui-monospace,Consolas,monospace}
+.sheet-row{border-bottom-color:#dce7f1}
+.sheet-index{font:800 13px ui-monospace,Consolas,monospace;color:#b7762c}
+.sheet-row strong{color:#1b334d}
+.sheet-row p{color:#5c7385}
+.sheet-foot{border-top-color:#173e67;color:#70849a}
+.metrics{background:#eef3f9;color:#183354;border-bottom:1px solid #d6e2ed}
+.metrics .wrap{padding:0}
+.metric{position:relative;padding:25px 23px 27px;border-right:1px solid #d7e1ec}
+.metric:first-child{padding-left:14px}.metric:first-child::before{left:14px}
+.metric::before{content:"";position:absolute;top:0;left:23px;width:47px;height:4px;background:#d89b52}
+.metric b{font-family:inherit;font-size:clamp(26px,3vw,37px);font-weight:850;color:#194b7d}
+.metric small{color:#536e89;font-size:11px;font-weight:650}
+.section{padding:92px 0}.alt{background:#f6f9fc}
+.section-no{font:800 11px ui-monospace,Consolas,monospace;letter-spacing:.12em;color:#2b659c;margin-bottom:17px}
+.section h2{font-size:clamp(27px,3vw,39px)}
+.aside-note{border-left:3px solid #dca363;color:#5b7288;background:#f2f6fa;padding:12px 15px;max-width:295px}
+.exp-grid{border-top:0;padding-top:0;grid-template-columns:minmax(240px,.7fr) minmax(0,1.3fr);gap:23px}
+.job{background:#15324e;color:#fff;padding:30px 27px}
+.job .overline{color:#f2b46a}
+.job h3{color:#fff}.job p{color:#cddce9}.job .period{color:#b6cade}
+.job .chips span{color:#e5edf5;border-color:#6c8297}
+.process{gap:12px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.process article{border:1px solid #dfe6ee;border-top:3px solid #d39b5a;padding:24px 21px;background:#fafcff;min-height:184px}
+.process article span{font:700 13px ui-monospace,Consolas,monospace;color:#ad6c26}
+.process h4{color:#183454}.process p{color:#627487}
+.cases{gap:20px}.case{grid-template-columns:265px minmax(0,1fr);border-color:#d8e2ec;box-shadow:0 11px 29px rgba(20,44,71,.025)}
+.case-summary{background:#15314e;color:#fff;border-right:0}
+.case:nth-child(2) .case-summary{background:#214870}
+.case:nth-child(3) .case-summary{background:#315b83}
+.case-summary .eyebrow{color:#f6bf77}
+.case-summary h3,.case-summary .case-numeric{color:#fff}
+.case-summary .case-numeric{font-family:inherit;font-size:48px;font-weight:830;letter-spacing:-.06em}
+.case-summary p{color:#cbddeb}
+.case-details{padding:31px 34px}.case-details p{color:#586b80}.case-details>p strong{color:#183c62}
+.case-steps{border-top-color:#dce6f0}.case-steps div span{color:#356da4}.case-steps div strong{color:#203d5e}.case-steps div p{color:#627487}
+.case-note{color:#6d6b66!important;border-left-color:#dda45d}
+.practice-head .education-flag{border-color:#c3d2e3;background:#ebf2fa;color:#285c8f}
+.project-grid{gap:18px}
+.project{border:1px solid #d7e1eb;box-shadow:0 12px 26px rgba(24,45,72,.035)}
+.project-image{background:#edf3f9;height:250px}.project-image img{background:#edf3f9;padding:5px}
+.project-body .smallrow{color:#37699c}.project-body h3{color:#172f4b}
+.project-body li{color:#566d81}.project-body li::marker{color:#cc914e}
+.project-body a{color:#1c548c;border-bottom-color:#3671a5}
+.project-body a:hover{color:#b4772e}
+.image-caption{font:750 10px ui-monospace,Consolas,monospace;letter-spacing:.035em;color:#64809a;background:#f8fbfe}
+.skill-group{border-top-color:#2b6599}.skill-list div{border-bottom-color:#dce4ed}.skill-list span{color:#536d84}
+.profile-strip{border-top-color:#dbe5ef}.profile-strip small{color:#32679b}
+.privacy{color:#728194;border-left-color:#d99c53}
+.contact,.footer{background:#0e233b}
+.contact{border-top:5px solid #dca25e}
+.contact p{color:#cbdbe9}
+.contact .action.primary{background:#e5a65a;color:#142940;border-color:#e5a65a}
+.contact .action.secondary{color:#e1edf9;border-color:#7b94ae}
+.contact .action.secondary:hover{background:#204567;color:#fff}
+.footer{border-top-color:#49637e;color:#d5e4f2}
+.dossier-section{background:#ecf2f8}
+.hw-dossier{display:grid;grid-template-columns:285px minmax(0,1fr);background:#fff;border:1px solid #d5e1ee;margin:24px 0;scroll-margin-top:100px;box-shadow:0 12px 34px rgba(18,45,77,.04)}
+.dossier-side{background:#163454;color:#f5faff;padding:29px 24px;align-self:stretch}
+.hw-dossier:nth-of-type(even) .dossier-side{background:#204971}
+.dossier-side .section-no{color:#f7be75;line-height:1.8}
+.dossier-side h3{font-size:24px;line-height:1.38;margin:20px 0 14px}
+.dossier-side p{color:#d5e6f6;font-size:12px;line-height:1.8}
+.dossier-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:23px}
+.dossier-chips span{padding:5px 9px;border:1px solid #7894b0;color:#f0f7ff;font-size:10px}
+.dossier-main{padding:29px 33px 32px}
+.dossier-main>p{font-size:13px;color:#53667b;line-height:1.94;margin-bottom:13px}
+.dossier-main>p strong{color:#174875}
+.dossier-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:24px}
+.dossier-gallery figure{margin:0;min-width:0;background:#f2f5fa;border:1px solid #dce4ec}
+.dossier-gallery img{width:100%;height:203px;object-fit:contain;padding:7px}
+.dossier-gallery figcaption{background:#fff;border-top:1px solid #dce4ec;padding:10px 11px;font-size:11px;color:#526c85;font-weight:700}
+.dossier-issues{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.dossier-issues div{border-left:3px solid #d89c55;background:#f5f8fc;padding:14px 15px}
+.dossier-issues b{font-size:12px;color:#254e76}
+.dossier-issues p{font-size:11px;margin:6px 0 0;line-height:1.75;color:#53687d}
+.dossier-caveat{font-size:11px;color:#77899a;margin-top:24px}
+@media(max-width:1000px){.hero-grid{gap:30px}.case{grid-template-columns:235px minmax(0,1fr)}.hw-dossier{grid-template-columns:240px minmax(0,1fr)}}
+@media(max-width:800px){.hero{padding:70px 0 77px}.hero-grid{grid-template-columns:1fr}.technical-sheet{max-width:590px;margin-top:23px}.metrics .wrap{grid-template-columns:1fr 1fr}.metric:nth-child(2){border-right:0}.exp-grid{grid-template-columns:1fr}.process{grid-template-columns:repeat(3,1fr)}.case{grid-template-columns:1fr}.case-summary{padding:23px 27px}.hw-dossier{grid-template-columns:1fr}.dossier-side{padding:23px 24px}.dossier-side h3{margin:9px 0}}
+@media(max-width:600px){.hero{padding:65px 0 68px}.hero h1{font-size:36px}.hero::after{right:18px}.hero p.lead{font-size:14px}.technical-sheet{box-shadow:7px 8px 0 #31506c;padding:25px 21px}.metric{padding:20px 12px}.metric::before{left:12px}.metric b{font-size:28px}.metric:first-child{padding-left:12px}.metric:first-child::before{left:12px}.section{padding:63px 0}.process{grid-template-columns:1fr 1fr}.case-summary{padding:23px 22px}.case-details{padding:23px 21px}.case-steps{grid-template-columns:1fr}.project-grid{grid-template-columns:1fr}.dossier-main{padding:22px 18px}.dossier-gallery{grid-template-columns:1fr}.dossier-gallery img{height:228px}.dossier-issues{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -24,7 +137,7 @@
 <header class="header"><div class="wrap">
 <a href="#top" class="identity" aria-label="Hardware Engineer 포트폴리오 처음으로"><span class="monogram" aria-hidden="true">LC</span><span class="identity-copy"><strong>이찬미</strong><small>HARDWARE ENGINEERING</small></span></a>
 <nav class="nav" aria-label="페이지 내 이동"><a href="#experience">실무 경력</a><a href="#cases">설계 개선</a><a href="#projects">H/W 연계 프로젝트</a><a href="#skills">기술 역량</a><a href="#contact">연락</a></nav>
-<a class="switch" href="../?v=20261023-1#projects">RTL·SoC 포트폴리오 ↗</a>
+
 </div></header>
 <main id="content">
 <section class="hero" id="top"><div class="wrap hero-grid"><div>
@@ -56,18 +169,53 @@
 </div></div></section>
 <section class="section" id="projects"><div class="wrap"><div class="practice-head"><div><span class="section-no">03 / FPGA · SENSOR · SYSTEM VALIDATION</span><h2>보드에서 Logic까지 연결해 본 교육 프로젝트</h2><p>실무 H/W 설계 경험과 별개로, FPGA·센서·차량 ECU 시스템을 직접 구현하고 측정·검증한 기록입니다. <strong>담당 모듈과 팀 전체 구현을 구분</strong>했습니다.</p></div><span class="education-flag">교육 프로젝트 · 2026</span></div>
 <div class="project-grid">
-<article class="project"><figure><div class="project-image"><img src="../assets/notion-originals/ov7670-block-design.png" loading="lazy" alt="OV7670 Camera·BRAM·VGA 제어 및 AXI 주변장치 실제 Block Design"></div><figcaption class="image-caption">ORIGINAL MATERIAL · OV7670 BLOCK DESIGN</figcaption></figure><div class="project-body"><div class="smallrow"><span>CAMERA / HARDWARE INTERFACE</span><span>01</span></div><h3>OV7670 Camera–BRAM–VGA Data Path</h3><p>Camera 입력 신호와 FPGA의 실제 저장·출력 Timing을 연결했습니다. 영상이 깨지거나 출력되지 않을 때 알고리즘보다 <strong>PCLK·HREF·VSYNC·BRAM Write·Read Latency</strong>부터 점검했습니다.</p><ul><li>QVGA 320×240, RGB565 Pixel Capture / Dual-Port BRAM</li><li>VGA 640×480 Read Address Mapping 및 1-Clock Latency 정렬</li><li>SCCB Register 설정과 ILA Trigger/BRAM Write 동작 추적</li></ul><a href="../?slug=ov7670-vga#engineering-detail">구현 내용·실제 파형 보기 ↗</a></div></article>
-<article class="project"><figure><div class="project-image"><img src="../assets/notion-originals/isp-oscilloscope-1.png" loading="lazy" alt="FPGA ADAS ISP 영상 입력 신호를 측정한 실제 계측기 화면"></div><figcaption class="image-caption">ORIGINAL MATERIAL · HARDWARE SIGNAL MEASUREMENT</figcaption></figure><div class="project-body"><div class="smallrow"><span>FPGA ISP / CAMERA SIGNAL</span><span>02</span></div><h3>FPGA ADAS ISP · Red Detect</h3><p>영상 인식 결과를 별도 제어 보드로 전달하는 시스템에서 Red Detect ISP와 AXI4-Lite UART Interface를 구현했습니다. Camera 입력 Noise가 영상 Edge로 전파되는 현상도 함께 확인했습니다.</p><ul><li>Red Filter → Gaussian → ROI → Red Decoder, UART STOP 0xFF</li><li>0.1 µF Decoupling·XCLK Series 22 Ω 기반 Camera Noise 개선</li><li>팀 통합: Camera→ISP→UART→MicroBlaze→Step Motor</li></ul><a href="../?slug=fpga-adas-isp#engineering-detail">구현 내용·계측 자료 보기 ↗</a></div></article>
-<article class="project"><figure><div class="project-image"><img src="../assets/original-can/can-ecu-architecture.png" loading="lazy" alt="Vision ECU, Basys 3 VCU, STM32 Motor ECU 간 CAN 통신 시스템 구조 원본"></div><figcaption class="image-caption">ORIGINAL MATERIAL · ECU SYSTEM ARCHITECTURE</figcaption></figure><div class="project-body"><div class="smallrow"><span>VEHICLE ECU / DIGITAL H/W</span><span>03</span></div><h3>CAN 기반 ADAS 차량 제어 시스템</h3><p><strong>Vision ECU가 인식 결과를 전송</strong>하고, Basys 3 VCU가 중앙에서 상태·우선순위·주행 명령을 판단한 뒤 STM32 Motor1·2 ECU로 명령을 내리는 구조입니다.</p><ul><li>주요 구현: CAN RX RTL(80 MHz / 500 kbps / 16 TQ)</li><li>Basys 3 MicroBlaze VCU CAN HAL·Driver·Application</li><li>공통 TQ 구조와 자기 송신 Dominant Edge Resync를 구분해 디버깅</li></ul><a href="../?slug=can-adas#engineering-detail">ECU 경로·파형 보기 ↗</a></div></article>
-<article class="project"><figure><div class="project-image"><img src="https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/hardware_demo.jpg" loading="lazy" alt="AXI4-Lite SoC와 SPI Peripheral을 Basys 3 실제 보드로 검증한 사진"></div><figcaption class="image-caption">ORIGINAL MATERIAL · BASYS 3 HARDWARE VERIFICATION</figcaption></figure><div class="project-body"><div class="smallrow"><span>FPGA / SOC INTEGRATION</span><span>04</span></div><h3>AXI4-Lite Peripheral · Board Verification</h3><p>MicroBlaze SoC에서 Custom SPI Master/Slave 및 AXI4-Lite Register Interface를 연동했습니다. Firmware로 Register를 제어한 뒤 FPGA 보드 간 실제 전송 결과를 확인했습니다.</p><ul><li>SR·TDR·RDR·CR Register Map, GPIO·Timer·UART·SPI 통합</li><li>SPI Slave RAM Read 주소 래치 오류 수정</li><li>Logic Analyzer와 Vitis Terminal을 대조해 Read/Write 확인</li></ul><a href="../?slug=axi-soc#engineering-detail">구현 내용·실보드 결과 보기 ↗</a></div></article>
+<article class="project"><figure><div class="project-image"><img src="../assets/notion-originals/ov7670-block-design.png" loading="lazy" alt="OV7670 Camera·BRAM·VGA 제어 및 AXI 주변장치 실제 Block Design"></div><figcaption class="image-caption">ORIGINAL MATERIAL · OV7670 BLOCK DESIGN</figcaption></figure><div class="project-body"><div class="smallrow"><span>CAMERA / HARDWARE INTERFACE</span><span>01</span></div><h3>OV7670 Camera–BRAM–VGA Data Path</h3><p>Camera 입력 신호와 FPGA의 실제 저장·출력 Timing을 연결했습니다. 영상이 깨지거나 출력되지 않을 때 알고리즘보다 <strong>PCLK·HREF·VSYNC·BRAM Write·Read Latency</strong>부터 점검했습니다.</p><ul><li>QVGA 320×240, RGB565 Pixel Capture / Dual-Port BRAM</li><li>VGA 640×480 Read Address Mapping 및 1-Clock Latency 정렬</li><li>SCCB Register 설정과 ILA Trigger/BRAM Write 동작 추적</li></ul><a href="#hw-ov">구현 내용·원본 자료 보기 ↓</a></div></article>
+<article class="project"><figure><div class="project-image"><img src="../assets/notion-originals/isp-oscilloscope-1.png" loading="lazy" alt="FPGA ADAS ISP 영상 입력 신호를 측정한 실제 계측기 화면"></div><figcaption class="image-caption">ORIGINAL MATERIAL · HARDWARE SIGNAL MEASUREMENT</figcaption></figure><div class="project-body"><div class="smallrow"><span>FPGA ISP / CAMERA SIGNAL</span><span>02</span></div><h3>FPGA ADAS ISP · Red Detect</h3><p>영상 인식 결과를 별도 제어 보드로 전달하는 시스템에서 Red Detect ISP와 AXI4-Lite UART Interface를 구현했습니다. Camera 입력 Noise가 영상 Edge로 전파되는 현상도 함께 확인했습니다.</p><ul><li>Red Filter → Gaussian → ROI → Red Decoder, UART STOP 0xFF</li><li>0.1 µF Decoupling·XCLK Series 22 Ω 기반 Camera Noise 개선</li><li>팀 통합: Camera→ISP→UART→MicroBlaze→Step Motor</li></ul><a href="#hw-isp">구현 내용·계측 자료 보기 ↓</a></div></article>
+<article class="project"><figure><div class="project-image"><img src="../assets/original-can/can-ecu-architecture.png" loading="lazy" alt="Vision ECU, Basys 3 VCU, STM32 Motor ECU 간 CAN 통신 시스템 구조 원본"></div><figcaption class="image-caption">ORIGINAL MATERIAL · ECU SYSTEM ARCHITECTURE</figcaption></figure><div class="project-body"><div class="smallrow"><span>VEHICLE ECU / DIGITAL H/W</span><span>03</span></div><h3>CAN 기반 ADAS 차량 제어 시스템</h3><p><strong>Vision ECU가 인식 결과를 전송</strong>하고, Basys 3 VCU가 중앙에서 상태·우선순위·주행 명령을 판단한 뒤 STM32 Motor1·2 ECU로 명령을 내리는 구조입니다.</p><ul><li>주요 구현: CAN RX RTL(80 MHz / 500 kbps / 16 TQ)</li><li>Basys 3 MicroBlaze VCU CAN HAL·Driver·Application</li><li>공통 TQ 구조와 자기 송신 Dominant Edge Resync를 구분해 디버깅</li></ul><a href="#hw-can">ECU 경로·파형 보기 ↓</a></div></article>
+<article class="project"><figure><div class="project-image"><img src="https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/hardware_demo.jpg" loading="lazy" alt="AXI4-Lite SoC와 SPI Peripheral을 Basys 3 실제 보드로 검증한 사진"></div><figcaption class="image-caption">ORIGINAL MATERIAL · BASYS 3 HARDWARE VERIFICATION</figcaption></figure><div class="project-body"><div class="smallrow"><span>FPGA / SOC INTEGRATION</span><span>04</span></div><h3>AXI4-Lite Peripheral · Board Verification</h3><p>MicroBlaze SoC에서 Custom SPI Master/Slave 및 AXI4-Lite Register Interface를 연동했습니다. Firmware로 Register를 제어한 뒤 FPGA 보드 간 실제 전송 결과를 확인했습니다.</p><ul><li>SR·TDR·RDR·CR Register Map, GPIO·Timer·UART·SPI 통합</li><li>SPI Slave RAM Read 주소 래치 오류 수정</li><li>Logic Analyzer와 Vitis Terminal을 대조해 Read/Write 확인</li></ul><a href="#hw-axi">구현 내용·실보드 결과 보기 ↓</a></div></article>
 </div></div></section>
-<section class="section alt" id="skills"><div class="wrap"><div class="section-head"><div class="head-main"><span class="section-no">04 / TOOLS AND CAPABILITIES</span><h2>실무 설계와 교육 기반 검증 역량</h2><p>업무에서 사용한 설계 역량과 교육 프로젝트로 검증한 RTL·MCU 역량을 혼동하지 않도록 나눴습니다.</p></div></div>
+
+<section class="section dossier-section" id="dossiers">
+<div class="wrap">
+<div class="section-head">
+  <div class="head-main"><span class="section-no">04 / TECHNICAL EVIDENCE</span><h2>실제 H/W 신호와 타이밍으로 확인한 설계</h2><p>교육 프로젝트에서 직접 구성한 H/W Interface, Logic 및 실보드 결과를 회로·PCB 엔지니어 관점으로 정리했습니다. 아래 이미지는 원본 프로젝트에서 추출한 설계 자료와 검증 화면입니다.</p></div>
+  <p class="aside-note">TRAINING EVIDENCE / 기업 실무는 상단 Load Board 사례로 구분합니다.</p>
+</div>
+<article class="hw-dossier" id="hw-ov">
+  <div class="dossier-side"><span class="section-no">EVIDENCE 01 / SENSOR INTERFACE</span><h3>OV7670 입력 Timing에서 VGA 출력까지</h3><p>카메라의 물리적인 입력 신호와 FPGA 내부 Data Path를 연결했습니다.</p><div class="dossier-chips"><span>QVGA 320×240</span><span>Dual-Port BRAM</span><span>ILA</span></div></div>
+  <div class="dossier-main"><p><strong>주요 구현 내용</strong> PCLK·HREF·VSYNC를 이용한 8bit × 2Byte RGB565 Pixel Capture, BRAM 주소 계산, 640×480 VGA의 2배 Mapping 및 1-Clock Read Latency에 맞춘 DE·HSYNC·VSYNC 정렬입니다.</p><p><strong>검증과 원인 추적</strong> 흰 화면·영상 Noise 발생 시 BRAM Write Enable과 동기신호를 ILA로 확인해 Camera Capture와 VGA Output 중 문제 위치를 구분했습니다.</p>
+    <div class="dossier-gallery"><figure><img loading="lazy" src="../assets/notion-originals/ov7670-block-design.png" alt="OV7670 및 BRAM VGA 실제 Block Design"><figcaption>MicroBlaze · Camera · BRAM Block Design</figcaption></figure><figure><img loading="lazy" src="../assets/notion-originals/ov7670-bram-write-wave.png" alt="OV7670 BRAM Write 실제 검증 파형"><figcaption>PCLK · BRAM Write 실제 파형</figcaption></figure></div>
+  </div>
+</article>
+<article class="hw-dossier" id="hw-isp">
+  <div class="dossier-side"><span class="section-no">EVIDENCE 02 / SIGNAL QUALITY</span><h3>Camera Noise 분석과 FPGA ISP</h3><p>입력 신호 품질이 최종 영상 인식 결과에 미치는 영향을 확인했습니다.</p><div class="dossier-chips"><span>22 Ω XCLK</span><span>0.1 µF</span><span>Red Detect</span></div></div>
+  <div class="dossier-main"><p><strong>주요 구현 내용</strong> Red Filter → Gaussian → ROI → Decoder → AXI4-Lite UART 0xFF STOP으로 이어지는 영상 검출·제어 경로를 구현했습니다.</p><p><strong>문제 해결</strong> OV7670 영상에 나타난 Noise가 Sobel/ROI 결과에도 반영되는 현상을 확인하고, Camera 전원 Decoupling 0.1 µF과 XCLK Source Series Resistance 22 Ω 등 H/W 조건을 함께 검토했습니다. Red 검출 후 WAIT_UNRED State로 연속 정지 명령 문제를 개선했습니다.</p>
+    <div class="dossier-gallery"><figure><img loading="lazy" src="../assets/notion-originals/isp-oscilloscope-1.png" alt="FPGA Camera 인터페이스 실제 오실로스코프 측정"><figcaption>Camera 입력 실제 계측기 화면</figcaption></figure><figure><img loading="lazy" src="../assets/notion-originals/isp-sobel-noisy-output.png" alt="Sobel 영상 Noise 실제 출력"><figcaption>영상 Edge Noise 실제 출력</figcaption></figure></div>
+  </div>
+</article>
+<article class="hw-dossier" id="hw-can">
+  <div class="dossier-side"><span class="section-no">EVIDENCE 03 / ECU INTEGRATION</span><h3>Vision ECU → VCU → Motor ECU</h3><p>ADAS 시스템 전체 흐름에서 CAN Bit Timing과 중앙 제어 경로를 검증했습니다.</p><div class="dossier-chips"><span>80 MHz</span><span>500 kbps · 16 TQ</span><span>Basys 3 VCU</span></div></div>
+  <div class="dossier-main"><p><strong>시스템 구성</strong> Vision ECU(Zynq Z7-20)가 영상 <em>인식 결과</em>를 CAN으로 전송합니다. Basys 3 VCU(MicroBlaze)가 Event 우선순위·주행 상태·속도·정지·회전 명령을 중앙에서 판단하고 STM32 Motor1·2 ECU에 CAN Motor Command를 전달합니다.</p><p><strong>주요 구현 내용</strong> CAN RX RTL(2-FF Sync → Bit Timing → Destuff → Frame FSM → CRC-15)과 Basys 3 VCU의 CAN HAL·Driver·Application입니다. 차량 전체 시연과 본인 구현 모듈은 구분합니다.</p>
+    <div class="dossier-issues"><div><b>TR01 · 공통 TQ Tick</b><p>RX/TX가 다른 Tick 기준을 쓰면 Hard Sync·Resync와 Sample Point가 어긋날 수 있어 공용 Timing 기준으로 정리했습니다.</p></div><div><b>TR02 · 자기 송신 Edge Resync</b><p>자신이 송신한 Dominant Edge를 Resync 대상으로 오인하는 별도 오류를 수정해 Bit Time 2.125 µs → 2.000 µs로 복원했습니다.</p></div></div>
+    <div class="dossier-gallery"><figure><img loading="lazy" src="../assets/original-can/can-ecu-architecture.png" alt="Vision ECU Basys 3 VCU STM32 Motor ECU 구조 원본"><figcaption>ADAS ECU 구성 · 원본</figcaption></figure><figure><img loading="lazy" src="../assets/original-can/can-common-timing-structure.png" alt="RX TX 공통 Timing 구조도"><figcaption>TR01 · 공통 Bit Timing 구조</figcaption></figure><figure><img loading="lazy" src="../assets/original-can/can-self-resync-before.png" alt="자기 송신 Resync 오류 수정 전 파형"><figcaption>TR02 · 수정 전 2.125 µs</figcaption></figure><figure><img loading="lazy" src="../assets/original-can/can-self-resync-after.png" alt="자기 송신 Resync 오류 수정 후 파형"><figcaption>TR02 · 수정 후 2.000 µs</figcaption></figure></div>
+  </div>
+</article>
+<article class="hw-dossier" id="hw-axi">
+  <div class="dossier-side"><span class="section-no">EVIDENCE 04 / BOARD VALIDATION</span><h3>AXI4-Lite SoC와 두 보드 간 SPI 검증</h3><p>RTL 내부 Register 동작을 실제 FPGA 인터페이스에서 확인했습니다.</p><div class="dossier-chips"><span>MicroBlaze</span><span>SPI Mode 0</span><span>Logic Analyzer</span></div></div>
+  <div class="dossier-main"><p><strong>주요 구현 내용</strong> Custom AXI4-Lite SPI Master/Slave IP의 SR·TDR·RDR·CR Register Map과 GPIO·Timer·UART 등 주변장치 연결, Vitis C Register 제어를 구성했습니다.</p><p><strong>실물 디버깅</strong> SPI Slave RAM Read에서 수신 중인 값을 주소로 참조하던 버그를 저장된 Address를 참조하도록 수정했습니다. 두 Basys 3 보드의 SCLK/MOSI/MISO/SS_n을 Logic Analyzer로 측정하고 RAM Read/Write 결과를 확인했습니다.</p>
+    <div class="dossier-gallery"><figure><img loading="lazy" src="https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/hardware_demo.jpg" alt="AXI Lite SoC 실제 FPGA 보드 사진"><figcaption>실제 Basys 3 실험 구성</figcaption></figure><figure><img loading="lazy" src="https://raw.githubusercontent.com/ichanmi1009/AXI_Peripheral/main/docs/images/spi_read_logic_analyzer.png" alt="SPI RAM Read Logic Analyzer 파형"><figcaption>SPI RAM Read 실측 Logic Analyzer</figcaption></figure></div>
+  </div>
+</article>
+<p class="dossier-caveat">* 고객사 Load Board 원본 Gerber·회로도와 별개인 교육 프로젝트 원본 자료만 공개했습니다.</p>
+</div></section>
+
+<section class="section alt" id="skills"><div class="wrap"><div class="section-head"><div class="head-main"><span class="section-no">05 / TOOLS AND CAPABILITIES</span><h2>실무 설계와 교육 기반 검증 역량</h2><p>업무에서 사용한 설계 역량과 교육 프로젝트로 검증한 RTL·MCU 역량을 혼동하지 않도록 나눴습니다.</p></div></div>
 <div class="skill-grid"><div class="skill-group"><span class="eyebrow">INDUSTRY EXPERIENCE</span><h3>PCB · Circuit · Signal/Power</h3><p>㈜티에스이 / Load Board 설계 실무</p><div class="skill-list"><div><strong>EDA</strong><span>OrCAD · Allegro · AutoCAD · Excel</span></div><div><strong>High-speed</strong><span>Stack-up · Constraints · Impedance · Return Path · Crosstalk</span></div><div><strong>Power</strong><span>PDN · Target Impedance · Power Loop · Decoupling</span></div><div><strong>Production</strong><span>DRC · Gerber · BOM · Revision · PCB 제작 대응</span></div></div></div>
 <div class="skill-group"><span class="eyebrow">TRAINING / PROJECTS</span><h3>FPGA · Interface · Verification</h3><p>온디바이스 AI 시스템반도체 설계 / 980시간</p><div class="skill-list"><div><strong>FPGA</strong><span>Vivado · Verilog · SystemVerilog · Timing / ILA</span></div><div><strong>Sensor</strong><span>OV7670 · SCCB · UART · SPI · I2C · VGA/BRAM</span></div><div><strong>SoC</strong><span>AXI4-Lite · MicroBlaze · Zynq PS–PL · Vitis</span></div><div><strong>Validation</strong><span>RTL Simulation · UVM · Logic Analyzer · Bare-metal C</span></div></div></div></div>
 <div class="profile-strip"><div><small>EDUCATION</small><strong>경상대학교 전자공학과</strong><p>2022.02 졸업 · GPA <b>4.22 / 4.5</b><br>경남과학기술대학교 전자공학과 · 3.93 / 4.5</p></div><div><small>LICENSES</small><strong>전기기사 · 전기공사기사</strong><p>회로·전기 기초 이론을 바탕으로 H/W 설계 실무를 수행했습니다.</p></div><div><small>ENGINEERING FOCUS</small><strong>Board → Interface → System</strong><p>신호·전원 품질과 보드 이후의 실제 디지털 동작까지 연결해 이해합니다.</p></div></div>
 <p class="privacy">보안 안내 · 근무 중 설계한 고객사 회로도, PCB 원본, 제품 식별 정보는 공개하지 않습니다. 본 페이지는 공개 가능한 업무 범위·개선 내용과 별도 교육 프로젝트 자료로 구성했습니다.</p>
 </div></section>
-<section class="contact" id="contact"><div class="wrap contact-grid"><div><span class="section-no" style="color:#a9cfca">05 / CONTACT</span><h2>Hardware 설계 경험을<br>시스템 검증까지 연결합니다.</h2><p>Load Board 설계의 실제 문제 해결 사례와 H/W Interface 프로젝트를 중심으로 기술적 질문에 답할 수 있습니다.</p></div><div class="contact-links"><a class="action primary" href="mailto:cd06274@naver.com">이메일 보내기 <span class="arrow">↗</span></a><a class="action secondary" href="https://github.com/ichanmi1009" target="_blank" rel="noopener noreferrer">GitHub 프로젝트 <span class="arrow">↗</span></a><a class="action secondary" href="../?v=20261023-1#projects">RTL·SoC 포트폴리오 <span class="arrow">→</span></a></div></div></section>
+<section class="contact" id="contact"><div class="wrap contact-grid"><div><span class="section-no" style="color:#a9cfca">06 / CONTACT</span><h2>Hardware 설계 경험을<br>시스템 검증까지 연결합니다.</h2><p>Load Board 설계의 실제 문제 해결 사례와 H/W Interface 프로젝트를 중심으로 기술적 질문에 답할 수 있습니다.</p></div><div class="contact-links"><a class="action primary" href="mailto:cd06274@naver.com">이메일 보내기 <span class="arrow">↗</span></a><a class="action secondary" href="https://github.com/ichanmi1009" target="_blank" rel="noopener noreferrer">GitHub 프로젝트 <span class="arrow">↗</span></a></div></div></section>
 </main>
 <footer class="footer"><div class="wrap"><span>© 2026 Lee Chanmi · Hardware Engineering</span><a href="#top">맨 위로 ↑</a></div></footer>
 </body></html>
