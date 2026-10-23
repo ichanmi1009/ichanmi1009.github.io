@@ -89,3 +89,10 @@
 .waveform-link{display:inline-flex;align-items:center;padding:11px 16px;border:1px solid #cddbcf;border-radius:6px;background:white;color:#13553d!important;font-size:12px;font-weight:700;text-decoration:none}
 .waveform-link:hover{background:#eaf3ed}
 @media(max-width:700px){.waveform-grid{grid-template-columns:1fr}.waveform-image-link{min-height:120px}}
+
+/* Original evidence links for separate CAN debug cases */
+.debug-evidence-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px;padding-top:13px;border-top:1px solid #e8e4dd}
+.debug-evidence-links a{font-size:12px;text-decoration:none;font-weight:700;color:#1e6249;padding:7px 0;border-bottom:1px solid #b7cbbd}
+.debug-evidence-links a:hover{border-bottom-color:#1e6249}
+.waveform-card{scroll-margin-top:25px}
+.waveform-card:target{outline:2px solid #779e8e;outline-offset:2px}
