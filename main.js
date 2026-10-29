@@ -165,7 +165,7 @@ const viewingDetail=new URLSearchParams(location.search).has('slug');const chose
   setupCards();
   setupCopy();
   setupProjectDetail();
-  if (location.hash && (viewingDetail || location.hash === '#projects')) {
+  if (location.hash && (viewingDetail || new Set(['#about','#featured','#projects','#experience','#capabilities','#education','#contact']).has(location.hash))) {
     requestAnimationFrame(() => document.querySelector(location.hash)?.scrollIntoView({block:'start'}));
   }
 })();
