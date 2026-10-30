@@ -120,3 +120,8 @@
 .hero-focus-tags span{display:inline-flex;align-items:center;border:1px solid #d7e2d9;border-radius:5px;background:#f3f7f2;padding:6px 10px;color:var(--green);font:650 11px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
 @media(max-width:900px){.rtl-feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rtl-feature-card:last-child{grid-column:1/-1;min-height:215px}}
 @media(max-width:600px){.rtl-feature-grid{grid-template-columns:1fr}.rtl-feature-card{min-height:auto;padding:21px 19px}.rtl-feature-card:last-child{grid-column:auto;min-height:auto}.rtl-feature-top{margin-bottom:18px}.rtl-feature-card h3{font-size:19px}.rtl-feature-spec{margin-top:12px}.hero-focus-tags{margin:-5px 0 23px}}
+
+/* Personal and team awards shown consistently in both portfolio editions */
+.hero-meta .hero-award{display:inline-flex;align-items:center;color:var(--green);font-size:11px;font-weight:800;background:var(--green-soft);border:1px solid #cddfd4;border-radius:5px;padding:6px 10px;white-space:normal}
+.education-award+.education-award{margin-top:9px;padding-top:11px}
+.education-award .award-type{display:inline-block;margin:0 5px;color:#59796a;font-weight:700;border:1px solid #cad9cc;border-radius:4px;padding:1px 5px;font-size:10px}
